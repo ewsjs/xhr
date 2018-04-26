@@ -47,7 +47,7 @@ export class ntlmAuthXhrApi implements IXHRApi {
             headers: xhroptions.headers,
             method: 'GET',
             agentHttps: new httpsAgent({ keepAlive: true, rejectUnauthorized: !this.allowUntrustedCertificate }), //keepaliveAgent
-            agentHttp: new httpAgent({ keepAlive: true, rejectUnauthorized: !this.allowUntrustedCertificate }) //keepaliveAgent
+            agentHttp: new httpAgent({ keepAlive: true }) //keepaliveAgent
         }
 
         return new Promise<XMLHttpRequest>((resolve, reject) => {
@@ -91,7 +91,7 @@ export class ntlmAuthXhrApi implements IXHRApi {
             headers: xhroptions.headers,
             method: 'GET',
             agentHttps: new httpsAgent({ keepAlive: true, rejectUnauthorized: !this.allowUntrustedCertificate }), //keepaliveAgent
-            agentHttp: new httpAgent({ keepAlive: true, rejectUnauthorized: !this.allowUntrustedCertificate }) //keepaliveAgent
+            agentHttp: new httpAgent({ keepAlive: true }) //keepaliveAgent
         }
 
         return new Promise<XMLHttpRequest>((resolve, reject) => {

@@ -10,42 +10,36 @@ import { IProvider } from "./IProvider";
 
 
 
-/** @internal */
-export class proxySupportedXhrApi implements IXHRApi {
+export class XhrApi implements IXHRApi {
 
-    proxyUrl: string = null;
-    proxyUser: string = null;
-    proxyPassword: string = null;
-    allowUntrustedCertificate: boolean;
-
+    /**@internal */
     private stream: any;
+    private proxyConfig = {
+        enabled: false,
+        url: null,
+        userName: null,
+        password: null,
+    };
 
     get apiName(): string {
         return "proxy";
     }
 
-    constructor(proxyUrl: string)
-    constructor(proxyUrl: string, allowUntrustedCertificate: boolean)
-    constructor(proxyUrl: string, proxyUserName: string, proxyPassword: string)
-    constructor(proxyUrl: string, proxyUserName: string, proxyPassword: string, allowUntrustedCertificate: boolean)
-    constructor(proxyUrl: string, proxyUserNameOrallowUntrustedCertificate: string | boolean = false, proxyPassword: string = null, allowUntrustedCertificate: boolean = false) {
-        this.proxyUrl = proxyUrl;
+    constructor(/**@internal */ private allowUntrustedCertificate: boolean = false) {
 
-        if (typeof proxyUserNameOrallowUntrustedCertificate === 'string') {
-            this.proxyUser = proxyUserNameOrallowUntrustedCertificate;
-            this.proxyPassword = proxyPassword
-            this.allowUntrustedCertificate = allowUntrustedCertificate;
-        }
-        else {
-            this.allowUntrustedCertificate = proxyUserNameOrallowUntrustedCertificate;
-        }
     }
 
-    SetProvider(provider: IProvider): void {
-        this.provider = provider;
+    useProxy(url: string, proxyUserName: string = null, proxyPassword: string = null): XhrApi {
+        this.proxyConfig = { enabled: url !== null, url: url, userName: proxyUserName, password: proxyPassword };
+        return this;
     }
 
-    private provider: IProvider = null;
+    setAuthProvider(authProvider: IProvider): void {
+        this.authProvider = authProvider;
+    }
+
+    /**@internal */
+    private authProvider: IProvider = null;
 
 
     xhr(xhroptions: IXHROptions, progressDelegate?: (progressData: IXHRProgress) => void): Promise<XMLHttpRequest> {
@@ -59,27 +53,29 @@ export class proxySupportedXhrApi implements IXHRApi {
             followRedirect: false,
             //resolveWithFullResponse: true
         }
+        options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
+        
+        // if (this.allowUntrustedCertificate) {
+        //     options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
+        // }
 
         let proxyStr = this.getProxyString();
         if (proxyStr) {
             options["proxy"] = proxyStr;
         }
-        options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
 
         return new Promise<XMLHttpRequest>((resolve, reject) => {
 
 
             let _promise: Promise<IXHROptions> = Promise.resolve(options);
 
-            if (this.provider) {
-                _promise = this.provider.preCall(options);
+            if (this.authProvider) {
+                _promise = this.authProvider.preCall(options);
             }
-
             _promise.then(opt => {
-                console.log("in proxy");
-                console.log(opt);
+                // console.log("in proxy");
+                // console.log(opt);
                 request(opt || options, (error, response, body) => {
-
                     if (error) {
                         rejectWithError(reject, error);
                     }
@@ -119,20 +115,19 @@ export class proxySupportedXhrApi implements IXHRApi {
             followRedirect: false,
 
         }
-
-        let proxyStr = this.getProxyString();
-        if (proxyStr) {
-            options["proxy"] = proxyStr;
-        }
-
+        
         options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
         
+        // if (this.allowUntrustedCertificate) {
+        //     options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
+        // }
+
         return new Promise<XMLHttpRequest>((resolve, reject) => {
 
             let _promise: Promise<IXHROptions> = Promise.resolve(options);
 
-            if (this.provider) {
-                _promise = this.provider.preCall(options);
+            if (this.authProvider) {
+                _promise = this.authProvider.preCall(options);
             }
 
             _promise.then(opt => {
@@ -175,23 +170,20 @@ export class proxySupportedXhrApi implements IXHRApi {
     }
 
     getProxyString(): string {
-        if (this.proxyUrl) {
-            let str: string = this.proxyUrl;
-            if (this.proxyUser && this.proxyPassword) {
-                let proxyParts = this.proxyUrl.split("://");
-
-                return (proxyParts[0] + "://" + this.proxyUser + ":" + this.proxyPassword + "@" + proxyParts[1]);
-
+        if (this.proxyConfig.enabled) {
+            let url: string = this.proxyConfig.url;
+            if (this.proxyConfig.userName && this.proxyConfig.password) {
+                let proxyParts = url.split("://");
+                return (proxyParts[0] + "://" + encodeURIComponent(this.proxyConfig.userName) + ":" + encodeURIComponent(this.proxyConfig.password) + "@" + proxyParts[1]);
             }
             else {
-                return this.proxyUrl;
+                return url;
             }
         }
         return null;
     }
-
-
 }
+
 
 function rejectWithError(reject: Function, reason) {
     let xhrResponse: XMLHttpRequest = <any>{

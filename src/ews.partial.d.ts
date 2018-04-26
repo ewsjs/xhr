@@ -8,6 +8,10 @@ export interface IXHROptions {
     data?: any;
     responseType?: string;
     customRequestInitializer?: (request: XMLHttpRequest) => void;
+    cookies?: any;
+    jar?: any;
+    rejectUnauthorized?: any;
+    proxy?: any;
 }
 export interface IXHRProgress {
     type: 'data' | 'header' | 'end' | 'error';

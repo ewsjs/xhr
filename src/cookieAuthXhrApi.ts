@@ -1,4 +1,5 @@
 import { FetchStream, fetchUrl, Meta } from 'fetch';
+import * as request from 'request';
 import * as  Promise from "bluebird";
 import { IXHROptions, IXHRApi, IXHRProgress } from "./ews.partial";
 import { setupXhrResponse } from "./utils";
@@ -11,10 +12,10 @@ export class cookieAuthXhrApi implements IXHRApi {
     private cookies: string[] = [];
 
     get apiName(): string {
-        return "ntlm";
+        return "cookie";
     }
 
-    constructor(username: string, password: string) {
+    constructor(username: string, password: string, private allowUntrustedCertificate: boolean = false) {
         this.username = username;
         this.password = password;
     }
@@ -32,6 +33,10 @@ export class cookieAuthXhrApi implements IXHRApi {
             headers: xhroptions.headers,
             method: <any>xhroptions.type,
             cookies: this.cookies
+        }
+
+        if (this.allowUntrustedCertificate) {
+            options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
         }
 
         return new Promise<XMLHttpRequest>((resolve, reject) => {
@@ -151,6 +156,9 @@ export class cookieAuthXhrApi implements IXHRApi {
                     payload: 'curl=Z2F&flags=0&forcedownlevel=0&formdir=1&trusted=0&username=' + this.username + '&password=' + this.password,
                     url: baseUrl,
                     disableRedirects: true
+                }
+                if (this.allowUntrustedCertificate) {
+                    preauthOptions["rejectUnauthorized"] = !this.allowUntrustedCertificate;
                 }
                 //obtaining cookies
                 fetchUrl(baseUrl, preauthOptions, (error, meta, body) => {

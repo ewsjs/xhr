@@ -3,37 +3,36 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var request = require("request");
 var Promise = require("bluebird");
 var utils_1 = require("./utils");
-/** @internal */
-var proxySupportedXhrApi = /** @class */ (function () {
-    function proxySupportedXhrApi(proxyUrl, proxyUserNameOrallowUntrustedCertificate, proxyPassword, allowUntrustedCertificate) {
-        if (proxyUserNameOrallowUntrustedCertificate === void 0) { proxyUserNameOrallowUntrustedCertificate = false; }
-        if (proxyPassword === void 0) { proxyPassword = null; }
+var XhrApi = /** @class */ (function () {
+    function XhrApi(/**@internal */ allowUntrustedCertificate) {
         if (allowUntrustedCertificate === void 0) { allowUntrustedCertificate = false; }
-        this.proxyUrl = null;
-        this.proxyUser = null;
-        this.proxyPassword = null;
-        this.provider = null;
-        this.proxyUrl = proxyUrl;
-        if (typeof proxyUserNameOrallowUntrustedCertificate === 'string') {
-            this.proxyUser = proxyUserNameOrallowUntrustedCertificate;
-            this.proxyPassword = proxyPassword;
-            this.allowUntrustedCertificate = allowUntrustedCertificate;
-        }
-        else {
-            this.allowUntrustedCertificate = proxyUserNameOrallowUntrustedCertificate;
-        }
+        this.allowUntrustedCertificate = allowUntrustedCertificate;
+        this.proxyConfig = {
+            enabled: false,
+            url: null,
+            userName: null,
+            password: null,
+        };
+        /**@internal */
+        this.authProvider = null;
     }
-    Object.defineProperty(proxySupportedXhrApi.prototype, "apiName", {
+    Object.defineProperty(XhrApi.prototype, "apiName", {
         get: function () {
             return "proxy";
         },
         enumerable: true,
         configurable: true
     });
-    proxySupportedXhrApi.prototype.SetProvider = function (provider) {
-        this.provider = provider;
+    XhrApi.prototype.useProxy = function (url, proxyUserName, proxyPassword) {
+        if (proxyUserName === void 0) { proxyUserName = null; }
+        if (proxyPassword === void 0) { proxyPassword = null; }
+        this.proxyConfig = { enabled: url !== null, url: url, userName: proxyUserName, password: proxyPassword };
+        return this;
     };
-    proxySupportedXhrApi.prototype.xhr = function (xhroptions, progressDelegate) {
+    XhrApi.prototype.setAuthProvider = function (authProvider) {
+        this.authProvider = authProvider;
+    };
+    XhrApi.prototype.xhr = function (xhroptions, progressDelegate) {
         var _this = this;
         //setup xhr for github.com/andris9/fetch options
         var options = {
@@ -43,19 +42,22 @@ var proxySupportedXhrApi = /** @class */ (function () {
             method: xhroptions.type,
             followRedirect: false,
         };
+        options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
+        // if (this.allowUntrustedCertificate) {
+        //     options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
+        // }
         var proxyStr = this.getProxyString();
         if (proxyStr) {
             options["proxy"] = proxyStr;
         }
-        options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
         return new Promise(function (resolve, reject) {
             var _promise = Promise.resolve(options);
-            if (_this.provider) {
-                _promise = _this.provider.preCall(options);
+            if (_this.authProvider) {
+                _promise = _this.authProvider.preCall(options);
             }
             _promise.then(function (opt) {
-                console.log("in proxy");
-                console.log(opt);
+                // console.log("in proxy");
+                // console.log(opt);
                 request(opt || options, function (error, response, body) {
                     if (error) {
                         rejectWithError(reject, error);
@@ -83,7 +85,7 @@ var proxySupportedXhrApi = /** @class */ (function () {
             });
         });
     };
-    proxySupportedXhrApi.prototype.xhrStream = function (xhroptions, progressDelegate) {
+    XhrApi.prototype.xhrStream = function (xhroptions, progressDelegate) {
         var _this = this;
         //setup xhr for github.com/andris9/fetch options
         var options = {
@@ -93,15 +95,14 @@ var proxySupportedXhrApi = /** @class */ (function () {
             method: xhroptions.type,
             followRedirect: false,
         };
-        var proxyStr = this.getProxyString();
-        if (proxyStr) {
-            options["proxy"] = proxyStr;
-        }
         options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
+        // if (this.allowUntrustedCertificate) {
+        //     options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
+        // }
         return new Promise(function (resolve, reject) {
             var _promise = Promise.resolve(options);
-            if (_this.provider) {
-                _promise = _this.provider.preCall(options);
+            if (_this.authProvider) {
+                _promise = _this.authProvider.preCall(options);
             }
             _promise.then(function (opt) {
                 _this.stream = request(options);
@@ -129,7 +130,7 @@ var proxySupportedXhrApi = /** @class */ (function () {
             });
         });
     };
-    proxySupportedXhrApi.prototype.disconnect = function () {
+    XhrApi.prototype.disconnect = function () {
         if (this.stream) {
             try {
                 this.stream.destroy();
@@ -137,22 +138,22 @@ var proxySupportedXhrApi = /** @class */ (function () {
             catch (e) { }
         }
     };
-    proxySupportedXhrApi.prototype.getProxyString = function () {
-        if (this.proxyUrl) {
-            var str = this.proxyUrl;
-            if (this.proxyUser && this.proxyPassword) {
-                var proxyParts = this.proxyUrl.split("://");
-                return (proxyParts[0] + "://" + this.proxyUser + ":" + this.proxyPassword + "@" + proxyParts[1]);
+    XhrApi.prototype.getProxyString = function () {
+        if (this.proxyConfig.enabled) {
+            var url = this.proxyConfig.url;
+            if (this.proxyConfig.userName && this.proxyConfig.password) {
+                var proxyParts = url.split("://");
+                return (proxyParts[0] + "://" + encodeURIComponent(this.proxyConfig.userName) + ":" + encodeURIComponent(this.proxyConfig.password) + "@" + proxyParts[1]);
             }
             else {
-                return this.proxyUrl;
+                return url;
             }
         }
         return null;
     };
-    return proxySupportedXhrApi;
+    return XhrApi;
 }());
-exports.proxySupportedXhrApi = proxySupportedXhrApi;
+exports.XhrApi = XhrApi;
 function rejectWithError(reject, reason) {
     var xhrResponse = {
         response: reason.response && reason.response.body ? reason.response.body.toString() : '',

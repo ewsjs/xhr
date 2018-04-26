@@ -1,17 +1,16 @@
 /// <reference types="bluebird" />
 import * as Promise from "bluebird";
 import { IXHROptions, IXHRApi, IXHRProgress } from "./ews.partial";
-export declare class cookieAuthXhrApi implements IXHRApi {
-    private allowUntrustedCertificate;
-    private stream;
-    private username;
-    private password;
-    private cookies;
+import { IProvider } from "./IProvider";
+export declare class XhrApi implements IXHRApi {
+    /**@internal */ private allowUntrustedCertificate;
+    private proxyConfig;
     readonly apiName: string;
-    constructor(username: string, password: string, allowUntrustedCertificate?: boolean);
+    constructor(/**@internal */ allowUntrustedCertificate?: boolean);
+    useProxy(url: string, proxyUserName?: string, proxyPassword?: string): XhrApi;
+    setAuthProvider(authProvider: IProvider): void;
     xhr(xhroptions: IXHROptions, progressDelegate?: (progressData: IXHRProgress) => void): Promise<XMLHttpRequest>;
     xhrStream(xhroptions: IXHROptions, progressDelegate: (progressData: IXHRProgress) => void): Promise<XMLHttpRequest>;
     disconnect(): void;
-    private cookiesPreCall(options);
-    private static parseString(url);
+    getProxyString(): string;
 }

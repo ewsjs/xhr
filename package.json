@@ -1,7 +1,7 @@
 {
-  "name": "ews-javascript-api-xhr",
-  "version": "0.2.0",
-  "description": "Library to Help with non-Basic Authentication methods with ews-javascript-api package",
+  "name": "@ewsjs/xhr",
+  "version": "1.3.0",
+  "description": "alternate XHR methods for ewsjs",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,6 +16,7 @@
   "homepage": "https://github.com/gautamsi/ews-javascript-api-auth",
   "author": "Gautam Singh (@gautamsi)",
   "license": "MIT",
+  "typings": "src/index.d.ts",
   "dependencies": {
     "bluebird": "^3.4.6",
     "fetch": "^1.0.1",

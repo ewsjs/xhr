@@ -4,12 +4,13 @@ var fetch_1 = require("fetch");
 var Promise = require("bluebird");
 var utils_1 = require("./utils");
 var https_1 = require("https");
+var http_1 = require("http");
 var _a = require("ntlm-client"), createType1Message = _a.createType1Message, decodeType2Message = _a.decodeType2Message, createType3Message = _a.createType3Message; //ref: has NTLM v2 support // info: also possible to use this package in node.
 //var ntlm = require('httpntlm').ntlm; //removing httpntlm due to lack of NTLM v2
 // var HttpsAgent = require('agentkeepalive').HttpsAgent; // can use this instead of node internal http agent
 // var keepaliveAgent = new HttpsAgent(); // new HttpsAgent({ keepAliveMsecs :10000}); need to add more seconds to keepalive for debugging time. debugging is advised on basic auth only
 /** @internal */
-var ntlmAuthXhrApi = (function () {
+var ntlmAuthXhrApi = /** @class */ (function () {
     function ntlmAuthXhrApi(username, password, allowUntrustedCertificate) {
         if (allowUntrustedCertificate === void 0) { allowUntrustedCertificate = false; }
         this.stream = null;
@@ -39,7 +40,8 @@ var ntlmAuthXhrApi = (function () {
             //payload: xhroptions.data,
             headers: xhroptions.headers,
             method: 'GET',
-            agent: new https_1.Agent({ keepAlive: true, rejectUnauthorized: !this.allowUntrustedCertificate }) //keepaliveAgent
+            agentHttps: new https_1.Agent({ keepAlive: true, rejectUnauthorized: !this.allowUntrustedCertificate }),
+            agentHttp: new http_1.Agent({ keepAlive: true }) //keepaliveAgent
         };
         return new Promise(function (resolve, reject) {
             _this.ntlmPreCall(options).then(function (optionsWithNtlmHeader) {
@@ -78,7 +80,8 @@ var ntlmAuthXhrApi = (function () {
             //payload: xhroptions.data,
             headers: xhroptions.headers,
             method: 'GET',
-            agent: new https_1.Agent({ keepAlive: true, rejectUnauthorized: !this.allowUntrustedCertificate }) //keepaliveAgent
+            agentHttps: new https_1.Agent({ keepAlive: true, rejectUnauthorized: !this.allowUntrustedCertificate }),
+            agentHttp: new http_1.Agent({ keepAlive: true }) //keepaliveAgent
         };
         return new Promise(function (resolve, reject) {
             _this.ntlmPreCall(options).then(function (optionsWithNtlmHeader) {

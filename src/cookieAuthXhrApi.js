@@ -3,8 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var fetch_1 = require("fetch");
 var Promise = require("bluebird");
 var utils_1 = require("./utils");
-var cookieAuthXhrApi = (function () {
-    function cookieAuthXhrApi(username, password) {
+var cookieAuthXhrApi = /** @class */ (function () {
+    function cookieAuthXhrApi(username, password, allowUntrustedCertificate) {
+        if (allowUntrustedCertificate === void 0) { allowUntrustedCertificate = false; }
+        this.allowUntrustedCertificate = allowUntrustedCertificate;
         this.stream = null;
         this.username = null;
         this.password = null;
@@ -14,7 +16,7 @@ var cookieAuthXhrApi = (function () {
     }
     Object.defineProperty(cookieAuthXhrApi.prototype, "apiName", {
         get: function () {
-            return "ntlm";
+            return "cookie";
         },
         enumerable: true,
         configurable: true
@@ -32,6 +34,9 @@ var cookieAuthXhrApi = (function () {
             method: xhroptions.type,
             cookies: this.cookies
         };
+        if (this.allowUntrustedCertificate) {
+            options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
+        }
         return new Promise(function (resolve, reject) {
             _this.cookiesPreCall(options).then(function () {
                 options.cookies = _this.cookies;
@@ -141,6 +146,9 @@ var cookieAuthXhrApi = (function () {
                     url: baseUrl,
                     disableRedirects: true
                 };
+                if (_this.allowUntrustedCertificate) {
+                    preauthOptions["rejectUnauthorized"] = !_this.allowUntrustedCertificate;
+                }
                 //obtaining cookies
                 fetch_1.fetchUrl(baseUrl, preauthOptions, function (error, meta, body) {
                     if (error) {
