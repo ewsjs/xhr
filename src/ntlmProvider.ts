@@ -58,9 +58,8 @@ export class NtlmProvider implements IProvider {
 
             options["jar"] = true;
 
-            // options["agent"] = new httpsAgent({ keepAlive: true, rejectUnauthorized: !this.allowUntrustedCertificate })
             options["agent"] = new httpsAgent({ keepAlive: true, rejectUnauthorized: options.rejectUnauthorized })
-            debugger;
+            // debugger;
             let type1msg = createType1Message(ntlmOptions.workstation, ntlmOptions.domain); // alternate client - ntlm-client
             let opt = (<any>Object).assign({}, options);
             opt['method'] = "GET";

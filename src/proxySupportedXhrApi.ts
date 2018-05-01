@@ -10,7 +10,6 @@ import { IProvider } from "./IProvider";
 
 
 
-/** @internal */
 export class proxySupportedXhrApi implements IXHRApi {
 
     proxyUrl: string = null;

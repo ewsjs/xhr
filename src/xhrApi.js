@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var request = require("request");
 var Promise = require("bluebird");
 var utils_1 = require("./utils");
+var ntlmProvider_1 = require("./ntlmProvider");
+var cookieProvider_1 = require("./cookieProvider");
 var XhrApi = /** @class */ (function () {
     function XhrApi(/**@internal */ allowUntrustedCertificate) {
         if (allowUntrustedCertificate === void 0) { allowUntrustedCertificate = false; }
@@ -23,10 +25,30 @@ var XhrApi = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    /**
+     * Enable use of Proxy server when using this XHR Api
+     *
+     * @param {string} url Proxy server url with port, usally http://server:8080 or https://server:port
+     * @param {string} [proxyUserName=null] proxy server authentication username
+     * @param {string} [proxyPassword=null] proxy server authentication password
+     * @returns {XhrApi} this returns the instance for chaining
+     * @memberof XhrApi
+     */
     XhrApi.prototype.useProxy = function (url, proxyUserName, proxyPassword) {
         if (proxyUserName === void 0) { proxyUserName = null; }
         if (proxyPassword === void 0) { proxyPassword = null; }
         this.proxyConfig = { enabled: url !== null, url: url, userName: proxyUserName, password: proxyPassword };
+        return this;
+    };
+    XhrApi.prototype.useNtlmAuthentication = function (username, password) {
+        if (this.proxyConfig.enabled === true) {
+            throw new Error("NtlmProvider does not work with proxy (yet!)");
+        }
+        this.authProvider = new ntlmProvider_1.NtlmProvider(username, password);
+        return this;
+    };
+    XhrApi.prototype.useCookieAuthentication = function (username, password) {
+        this.authProvider = new cookieProvider_1.CookieProvider(username, password);
         return this;
     };
     XhrApi.prototype.setAuthProvider = function (authProvider) {

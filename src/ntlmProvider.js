@@ -45,9 +45,8 @@ var NtlmProvider = /** @class */ (function () {
             options.headers['User-Agent'] = 'foo';
             options.headers['Connection'] = 'keep-alive';
             options["jar"] = true;
-            // options["agent"] = new httpsAgent({ keepAlive: true, rejectUnauthorized: !this.allowUntrustedCertificate })
             options["agent"] = new https_1.Agent({ keepAlive: true, rejectUnauthorized: options.rejectUnauthorized });
-            debugger;
+            // debugger;
             var type1msg = createType1Message(ntlmOptions.workstation, ntlmOptions.domain); // alternate client - ntlm-client
             var opt = Object.assign({}, options);
             opt['method'] = "GET";

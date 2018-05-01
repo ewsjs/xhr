@@ -2,7 +2,7 @@
     "tasks": [
         {
             "type": "typescript",
-            "tsconfig": "ews-javascript-api-auth-xhr\\tsconfig.json",
+            "tsconfig": "tsconfig.json",
             "problemMatcher": [
                 "$tsc"
             ],

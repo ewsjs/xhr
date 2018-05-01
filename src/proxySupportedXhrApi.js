@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var request = require("request");
 var Promise = require("bluebird");
 var utils_1 = require("./utils");
-/** @internal */
 var proxySupportedXhrApi = /** @class */ (function () {
     function proxySupportedXhrApi(proxyUrl, proxyUserNameOrallowUntrustedCertificate, proxyPassword, allowUntrustedCertificate) {
         if (proxyUserNameOrallowUntrustedCertificate === void 0) { proxyUserNameOrallowUntrustedCertificate = false; }

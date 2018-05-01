@@ -6,13 +6,15 @@ import { setupXhrResponse } from "./utils";
 import { Agent as httpsAgent } from "https";
 import { ClientResponse } from "http"
 import { IProvider } from "./IProvider";
-
-
+import { NtlmProvider } from './ntlmProvider';
+import { CookieProvider } from './cookieProvider';
 
 
 export class XhrApi implements IXHRApi {
 
-    /**@internal */
+    /**
+     * @internal 
+     */
     private stream: any;
     private proxyConfig = {
         enabled: false,
@@ -29,8 +31,30 @@ export class XhrApi implements IXHRApi {
 
     }
 
+    /**
+     * Enable use of Proxy server when using this XHR Api
+     * 
+     * @param {string} url Proxy server url with port, usally http://server:8080 or https://server:port
+     * @param {string} [proxyUserName=null] proxy server authentication username
+     * @param {string} [proxyPassword=null] proxy server authentication password
+     * @returns {XhrApi} this returns the instance for chaining
+     * @memberof XhrApi
+     */
     useProxy(url: string, proxyUserName: string = null, proxyPassword: string = null): XhrApi {
         this.proxyConfig = { enabled: url !== null, url: url, userName: proxyUserName, password: proxyPassword };
+        return this;
+    }
+
+    useNtlmAuthentication(username: string, password: string): XhrApi {
+        if (this.proxyConfig.enabled === true) {
+            throw new Error("NtlmProvider does not work with proxy (yet!)")
+        }
+        this.authProvider = new NtlmProvider(username, password);
+        return this;
+    }
+
+    useCookieAuthentication(username: string, password: string): XhrApi {
+        this.authProvider = new CookieProvider(username, password);
         return this;
     }
 
@@ -54,7 +78,7 @@ export class XhrApi implements IXHRApi {
             //resolveWithFullResponse: true
         }
         options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
-        
+
         // if (this.allowUntrustedCertificate) {
         //     options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
         // }
@@ -115,9 +139,9 @@ export class XhrApi implements IXHRApi {
             followRedirect: false,
 
         }
-        
+
         options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
-        
+
         // if (this.allowUntrustedCertificate) {
         //     options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
         // }
