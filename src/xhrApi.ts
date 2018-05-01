@@ -1,17 +1,28 @@
 import * as request from 'request';
+import { CoreOptions } from "request";
 import * as  Promise from "bluebird";
 import { IXHROptions, IXHRApi, IXHRProgress } from "./ews.partial";
 import { setupXhrResponse } from "./utils";
 
-import { Agent as httpsAgent } from "https";
+import { Agent as httpsAgent, RequestOptions } from "https";
 import { ClientResponse } from "http"
 import { IProvider } from "./IProvider";
 import { NtlmProvider } from './ntlmProvider';
 import { CookieProvider } from './cookieProvider';
 
-
+/**
+ * this is alternate XHR Api for ews-javascript-api/ewsjs
+ * 
+ * @export
+ * @class XhrApi
+ * @implements {IXHRApi}
+ */
 export class XhrApi implements IXHRApi {
 
+    static defaultOptions: CoreOptions = {};
+    requestOptions: CoreOptions = {};
+
+    private allowUntrustedCertificate: boolean;
     /**
      * @internal 
      */
@@ -24,11 +35,35 @@ export class XhrApi implements IXHRApi {
     };
 
     get apiName(): string {
-        return "proxy";
+        let n = "request";
+        if (this.proxyConfig.enabled = true) {
+            n += ";proxy:yes";
+        }
+        if (this.authProvider) {
+            n += ";auth:" + this.authProvider.providerName;
+        }
+        return "request";
     }
 
-    constructor(/**@internal */ private allowUntrustedCertificate: boolean = false) {
-
+    /**
+     * Creates an instance of XhrApi optionally passing options for request
+     * @param {CoreOptions} requestOptions Options for request
+     * @memberof XhrApi
+     */
+    constructor(requestOptions: CoreOptions)
+    /**
+     * Creates an instance of XhrApi. optionally pass true to bypass remote ssl/tls certificate check
+     * @param {boolean} allowUntrustedCertificate whether to allow non trusted certificate or not
+     * @memberof XhrApi
+     */
+    constructor(allowUntrustedCertificate: boolean);
+    constructor(aucoro: boolean | CoreOptions = false) {
+        if (typeof aucoro === 'object') {
+            this.requestOptions = aucoro;
+            this.allowUntrustedCertificate = !(typeof aucoro.rejectUnauthorized !== 'undefined' ? aucoro.rejectUnauthorized : true);
+        } else {
+            this.allowUntrustedCertificate = !!aucoro;
+        }
     }
 
     /**
@@ -37,14 +72,25 @@ export class XhrApi implements IXHRApi {
      * @param {string} url Proxy server url with port, usally http://server:8080 or https://server:port
      * @param {string} [proxyUserName=null] proxy server authentication username
      * @param {string} [proxyPassword=null] proxy server authentication password
-     * @returns {XhrApi} this returns the instance for chaining
+     * @returns {XhrApi} returns instance for chaining
      * @memberof XhrApi
      */
     useProxy(url: string, proxyUserName: string = null, proxyPassword: string = null): XhrApi {
+        if (this.authProvider instanceof NtlmProvider) {
+            throw new Error("NtlmProvider does not work with proxy (yet!)")
+        }
         this.proxyConfig = { enabled: url !== null, url: url, userName: proxyUserName, password: proxyPassword };
         return this;
     }
 
+    /**
+     * use NTLM authentication method, supports Ntlm v2
+     * 
+     * @param {string} username username for ntlm
+     * @param {string} password password for ntlm
+     * @returns {XhrApi} returns instance for chaining
+     * @memberof XhrApi
+     */
     useNtlmAuthentication(username: string, password: string): XhrApi {
         if (this.proxyConfig.enabled === true) {
             throw new Error("NtlmProvider does not work with proxy (yet!)")
@@ -53,11 +99,25 @@ export class XhrApi implements IXHRApi {
         return this;
     }
 
+    /**
+     * use cookies authentication method, usually required when hosted behind ISA/TMG
+     * 
+     * @param {string} username username for cookies auth
+     * @param {string} password password for cookies auth
+     * @returns {XhrApi} returns instance for chaining
+     * @memberof XhrApi
+     */
     useCookieAuthentication(username: string, password: string): XhrApi {
         this.authProvider = new CookieProvider(username, password);
         return this;
     }
 
+    /**
+     * set custom IProvider interface, needed for custom IProvider implementing custom precall method
+     * 
+     * @param {IProvider} authProvider auth provider implementing IProvider interface
+     * @memberof XhrApi
+     */
     setAuthProvider(authProvider: IProvider): void {
         this.authProvider = authProvider;
     }
@@ -87,7 +147,7 @@ export class XhrApi implements IXHRApi {
         if (proxyStr) {
             options["proxy"] = proxyStr;
         }
-
+        options = this.getOptions(options)
         return new Promise<XMLHttpRequest>((resolve, reject) => {
 
 
@@ -145,7 +205,11 @@ export class XhrApi implements IXHRApi {
         // if (this.allowUntrustedCertificate) {
         //     options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
         // }
-
+        let proxyStr = this.getProxyString();
+        if (proxyStr) {
+            options["proxy"] = proxyStr;
+        }
+        options = this.getOptions(options)
         return new Promise<XMLHttpRequest>((resolve, reject) => {
 
             let _promise: Promise<IXHROptions> = Promise.resolve(options);
@@ -193,7 +257,7 @@ export class XhrApi implements IXHRApi {
         }
     }
 
-    getProxyString(): string {
+    private getProxyString(): string {
         if (this.proxyConfig.enabled) {
             let url: string = this.proxyConfig.url;
             if (this.proxyConfig.userName && this.proxyConfig.password) {
@@ -205,6 +269,11 @@ export class XhrApi implements IXHRApi {
             }
         }
         return null;
+    }
+
+    private getOptions(opts: CoreOptions) {
+        let headers = Object.assign({}, (XhrApi.defaultOptions || {}).headers, (this.requestOptions || {}).headers, (opts || {}).headers)
+        return Object.assign({}, XhrApi.defaultOptions, this.requestOptions, opts, { headers });
     }
 }
 

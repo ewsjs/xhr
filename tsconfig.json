@@ -4,6 +4,7 @@
         "module": "commonjs",
         "declaration": true,
         "stripInternal": true,
+        "removeComments": false,
         "lib": [
             "es2015", "dom"
         ]

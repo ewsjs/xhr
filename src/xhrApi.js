@@ -5,10 +5,17 @@ var Promise = require("bluebird");
 var utils_1 = require("./utils");
 var ntlmProvider_1 = require("./ntlmProvider");
 var cookieProvider_1 = require("./cookieProvider");
+/**
+ * this is alternate XHR Api for ews-javascript-api/ewsjs
+ *
+ * @export
+ * @class XhrApi
+ * @implements {IXHRApi}
+ */
 var XhrApi = /** @class */ (function () {
-    function XhrApi(/**@internal */ allowUntrustedCertificate) {
-        if (allowUntrustedCertificate === void 0) { allowUntrustedCertificate = false; }
-        this.allowUntrustedCertificate = allowUntrustedCertificate;
+    function XhrApi(aucoro) {
+        if (aucoro === void 0) { aucoro = false; }
+        this.requestOptions = {};
         this.proxyConfig = {
             enabled: false,
             url: null,
@@ -17,10 +24,24 @@ var XhrApi = /** @class */ (function () {
         };
         /**@internal */
         this.authProvider = null;
+        if (typeof aucoro === 'object') {
+            this.requestOptions = aucoro;
+            this.allowUntrustedCertificate = !(typeof aucoro.rejectUnauthorized !== 'undefined' ? aucoro.rejectUnauthorized : true);
+        }
+        else {
+            this.allowUntrustedCertificate = !!aucoro;
+        }
     }
     Object.defineProperty(XhrApi.prototype, "apiName", {
         get: function () {
-            return "proxy";
+            var n = "request";
+            if (this.proxyConfig.enabled = true) {
+                n += ";proxy:yes";
+            }
+            if (this.authProvider) {
+                n += ";auth:" + this.authProvider.providerName;
+            }
+            return "request";
         },
         enumerable: true,
         configurable: true
@@ -31,15 +52,26 @@ var XhrApi = /** @class */ (function () {
      * @param {string} url Proxy server url with port, usally http://server:8080 or https://server:port
      * @param {string} [proxyUserName=null] proxy server authentication username
      * @param {string} [proxyPassword=null] proxy server authentication password
-     * @returns {XhrApi} this returns the instance for chaining
+     * @returns {XhrApi} returns instance for chaining
      * @memberof XhrApi
      */
     XhrApi.prototype.useProxy = function (url, proxyUserName, proxyPassword) {
         if (proxyUserName === void 0) { proxyUserName = null; }
         if (proxyPassword === void 0) { proxyPassword = null; }
+        if (this.authProvider instanceof ntlmProvider_1.NtlmProvider) {
+            throw new Error("NtlmProvider does not work with proxy (yet!)");
+        }
         this.proxyConfig = { enabled: url !== null, url: url, userName: proxyUserName, password: proxyPassword };
         return this;
     };
+    /**
+     * use NTLM authentication method, supports Ntlm v2
+     *
+     * @param {string} username username for ntlm
+     * @param {string} password password for ntlm
+     * @returns {XhrApi} returns instance for chaining
+     * @memberof XhrApi
+     */
     XhrApi.prototype.useNtlmAuthentication = function (username, password) {
         if (this.proxyConfig.enabled === true) {
             throw new Error("NtlmProvider does not work with proxy (yet!)");
@@ -47,10 +79,24 @@ var XhrApi = /** @class */ (function () {
         this.authProvider = new ntlmProvider_1.NtlmProvider(username, password);
         return this;
     };
+    /**
+     * use cookies authentication method, usually required when hosted behind ISA/TMG
+     *
+     * @param {string} username username for cookies auth
+     * @param {string} password password for cookies auth
+     * @returns {XhrApi} returns instance for chaining
+     * @memberof XhrApi
+     */
     XhrApi.prototype.useCookieAuthentication = function (username, password) {
         this.authProvider = new cookieProvider_1.CookieProvider(username, password);
         return this;
     };
+    /**
+     * set custom IProvider interface, needed for custom IProvider implementing custom precall method
+     *
+     * @param {IProvider} authProvider auth provider implementing IProvider interface
+     * @memberof XhrApi
+     */
     XhrApi.prototype.setAuthProvider = function (authProvider) {
         this.authProvider = authProvider;
     };
@@ -72,6 +118,7 @@ var XhrApi = /** @class */ (function () {
         if (proxyStr) {
             options["proxy"] = proxyStr;
         }
+        options = this.getOptions(options);
         return new Promise(function (resolve, reject) {
             var _promise = Promise.resolve(options);
             if (_this.authProvider) {
@@ -121,6 +168,11 @@ var XhrApi = /** @class */ (function () {
         // if (this.allowUntrustedCertificate) {
         //     options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
         // }
+        var proxyStr = this.getProxyString();
+        if (proxyStr) {
+            options["proxy"] = proxyStr;
+        }
+        options = this.getOptions(options);
         return new Promise(function (resolve, reject) {
             var _promise = Promise.resolve(options);
             if (_this.authProvider) {
@@ -173,6 +225,11 @@ var XhrApi = /** @class */ (function () {
         }
         return null;
     };
+    XhrApi.prototype.getOptions = function (opts) {
+        var headers = Object.assign({}, (XhrApi.defaultOptions || {}).headers, (this.requestOptions || {}).headers, (opts || {}).headers);
+        return Object.assign({}, XhrApi.defaultOptions, this.requestOptions, opts, { headers: headers });
+    };
+    XhrApi.defaultOptions = {};
     return XhrApi;
 }());
 exports.XhrApi = XhrApi;

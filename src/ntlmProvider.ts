@@ -52,7 +52,8 @@ export class NtlmProvider implements IProvider {
             //     options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
             // options["rejectUnauthorized"] = false;
             // }
-            options.headers['User-Agent'] = 'foo';
+            
+            // options.headers['User-Agent'] = 'foo';
 
             options.headers['Connection'] = 'keep-alive';
 
@@ -66,10 +67,10 @@ export class NtlmProvider implements IProvider {
             opt.headers['Authorization'] = type1msg;
             delete opt['body'];
             //opt.tunnel = true;
-            console.log("in provider");
-            console.log(opt);
-            console.log(opt.headers);
-            console.log(opt.headers.Connection);
+            // console.log("in provider");
+            // console.log(opt);
+            // console.log(opt.headers);
+            // console.log(opt.headers.Connection);
             request(opt, (error, response, body) => {
                 if (error) {
                     reject(error);

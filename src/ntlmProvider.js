@@ -42,7 +42,7 @@ var NtlmProvider = /** @class */ (function () {
             //     options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
             // options["rejectUnauthorized"] = false;
             // }
-            options.headers['User-Agent'] = 'foo';
+            // options.headers['User-Agent'] = 'foo';
             options.headers['Connection'] = 'keep-alive';
             options["jar"] = true;
             options["agent"] = new https_1.Agent({ keepAlive: true, rejectUnauthorized: options.rejectUnauthorized });
@@ -53,10 +53,10 @@ var NtlmProvider = /** @class */ (function () {
             opt.headers['Authorization'] = type1msg;
             delete opt['body'];
             //opt.tunnel = true;
-            console.log("in provider");
-            console.log(opt);
-            console.log(opt.headers);
-            console.log(opt.headers.Connection);
+            // console.log("in provider");
+            // console.log(opt);
+            // console.log(opt.headers);
+            // console.log(opt.headers.Connection);
             request(opt, function (error, response, body) {
                 if (error) {
                     reject(error);
