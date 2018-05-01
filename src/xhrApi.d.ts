@@ -19,6 +19,11 @@ export declare class XhrApi implements IXHRApi {
     readonly apiName: string;
     /**
      * Creates an instance of XhrApi optionally passing options for request
+     * @memberof XhrApi
+     */
+    constructor();
+    /**
+     * Creates an instance of XhrApi optionally passing options for request
      * @param {CoreOptions} requestOptions Options for request
      * @memberof XhrApi
      */

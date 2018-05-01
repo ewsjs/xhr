@@ -47,10 +47,15 @@ export class XhrApi implements IXHRApi {
 
     /**
      * Creates an instance of XhrApi optionally passing options for request
+     * @memberof XhrApi
+     */
+    constructor();
+    /**
+     * Creates an instance of XhrApi optionally passing options for request
      * @param {CoreOptions} requestOptions Options for request
      * @memberof XhrApi
      */
-    constructor(requestOptions: CoreOptions)
+    constructor(requestOptions: CoreOptions);
     /**
      * Creates an instance of XhrApi. optionally pass true to bypass remote ssl/tls certificate check
      * @param {boolean} allowUntrustedCertificate whether to allow non trusted certificate or not
