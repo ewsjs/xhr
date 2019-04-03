@@ -4,7 +4,7 @@
   "description": "alternate XHR methods for ewsjs",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha ./test/ --exit"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
   "devDependencies": {
     "@types/bluebird": "^3.0.36",
     "@types/node": "^6.0.52",
-    "@types/request": "^2.47.0"
+    "@types/request": "^2.47.0",
+    "mocha": "^6.0.2"
   }
 }
