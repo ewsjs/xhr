@@ -1,4 +1,3 @@
-/// <reference types="bluebird" />
 import * as Promise from "bluebird";
 import { IXHROptions, IXHRApi, IXHRProgress } from "./ews.partial";
 export declare class cookieAuthXhrApi implements IXHRApi {
@@ -12,6 +11,6 @@ export declare class cookieAuthXhrApi implements IXHRApi {
     xhr(xhroptions: IXHROptions, progressDelegate?: (progressData: IXHRProgress) => void): Promise<XMLHttpRequest>;
     xhrStream(xhroptions: IXHROptions, progressDelegate: (progressData: IXHRProgress) => void): Promise<XMLHttpRequest>;
     disconnect(): void;
-    private cookiesPreCall(options);
-    private static parseString(url);
+    private cookiesPreCall;
+    private static parseString;
 }

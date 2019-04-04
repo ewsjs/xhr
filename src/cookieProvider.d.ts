@@ -1,4 +1,3 @@
-/// <reference types="bluebird" />
 import * as Promise from "bluebird";
 import { IXHROptions } from "./ews.partial";
 import { IProvider } from "./IProvider";

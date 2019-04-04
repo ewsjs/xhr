@@ -1,5 +1,3 @@
-/// <reference types="request" />
-/// <reference types="bluebird" />
 import { CoreOptions } from "request";
 import * as Promise from "bluebird";
 import { IXHROptions, IXHRApi, IXHRProgress } from "./ews.partial";
@@ -72,6 +70,6 @@ export declare class XhrApi implements IXHRApi {
     xhr(xhroptions: IXHROptions, progressDelegate?: (progressData: IXHRProgress) => void): Promise<XMLHttpRequest>;
     xhrStream(xhroptions: IXHROptions, progressDelegate: (progressData: IXHRProgress) => void): Promise<XMLHttpRequest>;
     disconnect(): void;
-    private getProxyString();
-    private getOptions(opts);
+    private getProxyString;
+    private getOptions;
 }
