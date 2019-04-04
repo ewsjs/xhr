@@ -58,30 +58,35 @@ var NtlmProvider = /** @class */ (function () {
             // console.log(opt.headers);
             // console.log(opt.headers.Connection);
             request(opt, function (error, response, body) {
-                if (error) {
-                    reject(error);
+                try {
+                    if (error) {
+                        reject(error);
+                    }
+                    else {
+                        // let xhrResponse: XMLHttpRequest = <any>{
+                        //     response: body ? body.toString() : '',
+                        //     status: response.statusCode,
+                        //     //redirectCount: meta.redirectCount,
+                        //     headers: response.headers,
+                        //     finalUrl: response.url,
+                        //     responseType: '',
+                        //     statusText: response.statusMessage,
+                        // };
+                        if (!response.headers['www-authenticate'])
+                            throw new Error('www-authenticate not found on response of second request');
+                        //let type2msg = ntlm.parseType2Message(res.headers['www-authenticate']); //httpntlm
+                        //let type3msg = ntlm.createType3Message(type2msg, ntlmOptions); //httpntlm
+                        var type2msg = decodeType2Message(response.headers['www-authenticate']); //with ntlm-client
+                        var type3msg = createType3Message(type2msg, ntlmOptions.username, ntlmOptions.password, ntlmOptions.workstation, ntlmOptions.domain); //with ntlm-client
+                        delete options.headers['authorization']; // 'fetch' has this wired addition with lower case, with lower case ntlm on server side fails
+                        delete options.headers['connection']; // 'fetch' has this wired addition with lower case, with lower case ntlm on server side fails
+                        options.headers['Authorization'] = type3msg;
+                        options.headers['Connection'] = 'Close';
+                        resolve(options);
+                    }
                 }
-                else {
-                    // let xhrResponse: XMLHttpRequest = <any>{
-                    //     response: body ? body.toString() : '',
-                    //     status: response.statusCode,
-                    //     //redirectCount: meta.redirectCount,
-                    //     headers: response.headers,
-                    //     finalUrl: response.url,
-                    //     responseType: '',
-                    //     statusText: response.statusMessage,
-                    // };
-                    if (!response.headers['www-authenticate'])
-                        throw new Error('www-authenticate not found on response of second request');
-                    //let type2msg = ntlm.parseType2Message(res.headers['www-authenticate']); //httpntlm
-                    //let type3msg = ntlm.createType3Message(type2msg, ntlmOptions); //httpntlm
-                    var type2msg = decodeType2Message(response.headers['www-authenticate']); //with ntlm-client
-                    var type3msg = createType3Message(type2msg, ntlmOptions.username, ntlmOptions.password, ntlmOptions.workstation, ntlmOptions.domain); //with ntlm-client
-                    delete options.headers['authorization']; // 'fetch' has this wired addition with lower case, with lower case ntlm on server side fails
-                    delete options.headers['connection']; // 'fetch' has this wired addition with lower case, with lower case ntlm on server side fails
-                    options.headers['Authorization'] = type3msg;
-                    options.headers['Connection'] = 'Close';
-                    resolve(options);
+                catch (err) {
+                    reject(err);
                 }
             });
         });
