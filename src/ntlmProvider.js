@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var request = require("request");
 var Promise = require("bluebird");
+var ntlm_client_1 = require("@ewsjs/ntlm-client");
 var https_1 = require("https");
-var _a = require("ntlm-client"), createType1Message = _a.createType1Message, decodeType2Message = _a.decodeType2Message, createType3Message = _a.createType3Message; //ref: has NTLM v2 support // info: also possible to use this package in node.
 var NtlmProvider = /** @class */ (function () {
     function NtlmProvider(username, password) {
         this.username = null;
@@ -35,7 +35,7 @@ var NtlmProvider = /** @class */ (function () {
             options.headers['Connection'] = 'keep-alive';
             options["jar"] = true;
             options["agent"] = new https_1.Agent({ keepAlive: true, rejectUnauthorized: options.rejectUnauthorized });
-            var type1msg = createType1Message(ntlmOptions.workstation, ntlmOptions.domain); // alternate client - ntlm-client
+            var type1msg = ntlm_client_1.createType1Message(ntlmOptions.workstation, ntlmOptions.domain); // alternate client - ntlm-client
             var opt = Object.assign({}, options);
             opt['method'] = "GET";
             opt.headers['Authorization'] = type1msg;
@@ -48,8 +48,8 @@ var NtlmProvider = /** @class */ (function () {
                     else {
                         if (!response.headers['www-authenticate'])
                             throw new Error('www-authenticate not found on response of second request');
-                        var type2msg = decodeType2Message(response.headers['www-authenticate']);
-                        var type3msg = createType3Message(type2msg, ntlmOptions.username, ntlmOptions.password, ntlmOptions.workstation, ntlmOptions.domain);
+                        var type2msg = ntlm_client_1.decodeType2Message(response.headers['www-authenticate']);
+                        var type3msg = ntlm_client_1.createType3Message(type2msg, ntlmOptions.username, ntlmOptions.password, ntlmOptions.workstation, ntlmOptions.domain);
                         delete options.headers['authorization']; // 'fetch' has this wired addition with lower case, with lower case ntlm on server side fails
                         delete options.headers['connection']; // 'fetch' has this wired addition with lower case, with lower case ntlm on server side fails
                         options.headers['Authorization'] = type3msg;

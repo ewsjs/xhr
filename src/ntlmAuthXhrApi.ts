@@ -1,17 +1,11 @@
 import { FetchStream, fetchUrl } from 'fetch';
 import * as  Promise from "bluebird";
-import { IXHROptions, IXHRApi, IXHRProgress } from "./ews.partial";
-import { setupXhrResponse } from "./utils";
-
+import { createType1Message, decodeType2Message, createType3Message } from "@ewsjs/ntlm-client";
 import { Agent as httpsAgent } from "https";
 import { Agent as httpAgent } from "http";
 
-var { createType1Message, decodeType2Message, createType3Message } = require("ntlm-client") //ref: has NTLM v2 support // info: also possible to use this package in node.
-
-//var ntlm = require('httpntlm').ntlm; //removing httpntlm due to lack of NTLM v2
-
-// var HttpsAgent = require('agentkeepalive').HttpsAgent; // can use this instead of node internal http agent
-// var keepaliveAgent = new HttpsAgent(); // new HttpsAgent({ keepAliveMsecs :10000}); need to add more seconds to keepalive for debugging time. debugging is advised on basic auth only
+import { setupXhrResponse } from "./utils";
+import { IXHROptions, IXHRApi, IXHRProgress } from "./ews.partial";
 
 /** @internal */
 export class ntlmAuthXhrApi implements IXHRApi {
@@ -145,8 +139,7 @@ export class ntlmAuthXhrApi implements IXHRApi {
 
         return new Promise<XMLHttpRequest>((resolve, reject) => {
 
-            //let type1msg = ntlm.createType1Message(ntlmOptions); //lack of v2
-            let type1msg = createType1Message(ntlmOptions.workstation, ntlmOptions.domain); // alternate client - ntlm-client
+            let type1msg = createType1Message(ntlmOptions.workstation, ntlmOptions.domain);
 
             options.headers['Authorization'] = type1msg;
             options.headers['Connection'] = 'keep-alive';
@@ -172,9 +165,7 @@ export class ntlmAuthXhrApi implements IXHRApi {
             if (!res.headers['www-authenticate'])
                 throw new Error('www-authenticate not found on response of second request');
 
-            //let type2msg = ntlm.parseType2Message(res.headers['www-authenticate']); //httpntlm
-            //let type3msg = ntlm.createType3Message(type2msg, ntlmOptions); //httpntlm
-            let type2msg = decodeType2Message(res.headers['www-authenticate']); //with ntlm-client
+            let type2msg = decodeType2Message(res.headers['www-authenticate']);
             let type3msg = createType3Message(type2msg, ntlmOptions.username, ntlmOptions.password, ntlmOptions.workstation, ntlmOptions.domain); //with ntlm-client
 
             delete options.headers['authorization'] // 'fetch' has this wired addition with lower case, with lower case ntlm on server side fails

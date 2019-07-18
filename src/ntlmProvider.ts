@@ -1,12 +1,11 @@
 import * as request from 'request';
 import * as  Promise from "bluebird";
-import { IXHROptions } from "./ews.partial";
-
-import { IProvider } from "./IProvider";
-
+import { createType1Message, decodeType2Message, createType3Message } from "@ewsjs/ntlm-client";
 import { Agent as httpsAgent } from "https";
 
-var { createType1Message, decodeType2Message, createType3Message } = require("ntlm-client") //ref: has NTLM v2 support // info: also possible to use this package in node.
+import { IXHROptions } from "./ews.partial";
+import { IProvider } from "./IProvider";
+
 
 export class NtlmProvider implements IProvider {
 
