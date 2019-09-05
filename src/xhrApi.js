@@ -108,7 +108,7 @@ var XhrApi = /** @class */ (function () {
             body: xhroptions.data,
             headers: xhroptions.headers,
             method: xhroptions.type,
-            followRedirect: false,
+            followRedirect: !!xhroptions.allowRedirect,
         };
         options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
         // if (this.allowUntrustedCertificate) {

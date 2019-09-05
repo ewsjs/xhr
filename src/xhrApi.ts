@@ -4,8 +4,6 @@ import * as  Promise from "bluebird";
 import { IXHROptions, IXHRApi, IXHRProgress } from "./ews.partial";
 import { setupXhrResponse } from "./utils";
 
-import { Agent as httpsAgent, RequestOptions } from "https";
-import { ClientResponse } from "http"
 import { IProvider } from "./IProvider";
 import { NtlmProvider } from './ntlmProvider';
 import { CookieProvider } from './cookieProvider';
@@ -139,7 +137,7 @@ export class XhrApi implements IXHRApi {
             body: xhroptions.data,
             headers: xhroptions.headers,
             method: <any>xhroptions.type,
-            followRedirect: false,
+            followRedirect: !!xhroptions.allowRedirect,
             //resolveWithFullResponse: true
         }
         options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
