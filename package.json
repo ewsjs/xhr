@@ -1,8 +1,8 @@
 {
   "name": "@ewsjs/xhr",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "alternate XHR methods for ewsjs",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "mocha ./test/ --exit"
   },
@@ -16,7 +16,7 @@
   "homepage": "https://github.com/gautamsi/ews-javascript-api-auth",
   "author": "Gautam Singh (@gautamsi)",
   "license": "MIT",
-  "typings": "src/index.d.ts",
+  "typings": "dist/index.d.ts",
   "dependencies": {
     "@ewsjs/ntlm-client": "^1.0.0",
     "bluebird": "^3.4.6",
