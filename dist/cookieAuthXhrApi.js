@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.cookieAuthXhrApi = void 0;
 var fetch_1 = require("fetch");
 var Promise = require("bluebird");
 var utils_1 = require("./utils");
@@ -18,7 +19,7 @@ var cookieAuthXhrApi = /** @class */ (function () {
         get: function () {
             return "cookie";
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     cookieAuthXhrApi.prototype.xhr = function (xhroptions, progressDelegate) {

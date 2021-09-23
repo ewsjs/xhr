@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ntlmAuthXhrApi = void 0;
 var fetch_1 = require("fetch");
 var Promise = require("bluebird");
 var ntlm_client_1 = require("@ewsjs/ntlm-client");
@@ -26,7 +27,7 @@ var ntlmAuthXhrApi = /** @class */ (function () {
         get: function () {
             return "ntlm";
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     ntlmAuthXhrApi.prototype.xhr = function (xhroptions, progressDelegate) {

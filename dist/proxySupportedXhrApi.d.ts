@@ -7,7 +7,7 @@ export declare class proxySupportedXhrApi implements IXHRApi {
     proxyPassword: string;
     allowUntrustedCertificate: boolean;
     private stream;
-    readonly apiName: string;
+    get apiName(): string;
     constructor(proxyUrl: string);
     constructor(proxyUrl: string, allowUntrustedCertificate: boolean);
     constructor(proxyUrl: string, proxyUserName: string, proxyPassword: string);

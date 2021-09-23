@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.NtlmProvider = void 0;
 var request = require("request");
 var Promise = require("bluebird");
 var ntlm_client_1 = require("@ewsjs/ntlm-client");
@@ -20,7 +21,7 @@ var NtlmProvider = /** @class */ (function () {
         get: function () {
             return "ntlm";
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     NtlmProvider.prototype.preCall = function (options) {

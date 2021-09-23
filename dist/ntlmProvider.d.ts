@@ -5,7 +5,7 @@ export declare class NtlmProvider implements IProvider {
     private username;
     private password;
     private domain;
-    readonly providerName: string;
+    get providerName(): string;
     constructor(username: string, password: string);
     preCall(options: IXHROptions): Promise<IXHROptions>;
 }

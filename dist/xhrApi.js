@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.XhrApi = void 0;
 var request = require("request");
 var Promise = require("bluebird");
 var utils_1 = require("./utils");
@@ -43,7 +44,7 @@ var XhrApi = /** @class */ (function () {
             }
             return "request";
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     /**

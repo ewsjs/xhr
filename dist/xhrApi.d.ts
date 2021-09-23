@@ -14,7 +14,7 @@ export declare class XhrApi implements IXHRApi {
     requestOptions: CoreOptions;
     private allowUntrustedCertificate;
     private proxyConfig;
-    readonly apiName: string;
+    get apiName(): string;
     /**
      * Creates an instance of XhrApi optionally passing options for request
      * @memberof XhrApi

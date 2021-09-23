@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.proxySupportedXhrApi = void 0;
 var request = require("request");
 var Promise = require("bluebird");
 var utils_1 = require("./utils");
@@ -26,7 +27,7 @@ var proxySupportedXhrApi = /** @class */ (function () {
         get: function () {
             return "proxy";
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     proxySupportedXhrApi.prototype.SetProvider = function (provider) {

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CookieProvider = void 0;
 var request = require("request");
 var Promise = require("bluebird");
 var CookieProvider = /** @class */ (function () {
@@ -18,7 +19,7 @@ var CookieProvider = /** @class */ (function () {
         get: function () {
             return "cookie";
         },
-        enumerable: true,
+        enumerable: false,
         configurable: true
     });
     CookieProvider.prototype.preCall = function (options) {

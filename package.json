@@ -1,6 +1,6 @@
 {
   "name": "@ewsjs/xhr",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "alternate XHR methods for ewsjs",
   "main": "dist/index.js",
   "scripts": {
@@ -27,6 +27,6 @@
     "@types/bluebird": "^3.0.36",
     "@types/node": "^6.0.52",
     "@types/request": "^2.47.0",
-    "mocha": "^6.2.0"
+    "mocha": "^9.1.1"
   }
 }

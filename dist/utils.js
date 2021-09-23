@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.setupXhrResponse = void 0;
 /** @internal */
 function setupXhrResponse(xhrResponse) {
     xhrResponse["responseText"] = xhrResponse["response"];

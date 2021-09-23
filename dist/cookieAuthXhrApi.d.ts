@@ -6,7 +6,7 @@ export declare class cookieAuthXhrApi implements IXHRApi {
     private username;
     private password;
     private cookies;
-    readonly apiName: string;
+    get apiName(): string;
     constructor(username: string, password: string, allowUntrustedCertificate?: boolean);
     xhr(xhroptions: IXHROptions, progressDelegate?: (progressData: IXHRProgress) => void): Promise<XMLHttpRequest>;
     xhrStream(xhroptions: IXHROptions, progressDelegate: (progressData: IXHRProgress) => void): Promise<XMLHttpRequest>;
