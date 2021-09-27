@@ -7,7 +7,6 @@ var ntlm_client_1 = require("@ewsjs/ntlm-client");
 var https_1 = require("https");
 var http_1 = require("http");
 var utils_1 = require("./utils");
-/** @internal */
 var ntlmAuthXhrApi = /** @class */ (function () {
     function ntlmAuthXhrApi(username, password, allowUntrustedCertificate) {
         if (allowUntrustedCertificate === void 0) { allowUntrustedCertificate = false; }

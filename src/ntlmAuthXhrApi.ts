@@ -7,7 +7,6 @@ import { Agent as httpAgent } from "http";
 import { setupXhrResponse } from "./utils";
 import { IXHROptions, IXHRApi, IXHRProgress } from "./ews.partial";
 
-/** @internal */
 export class ntlmAuthXhrApi implements IXHRApi {
 
     private stream: FetchStream = null;
