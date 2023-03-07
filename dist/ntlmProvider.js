@@ -36,7 +36,7 @@ var NtlmProvider = /** @class */ (function () {
             options.headers['Connection'] = 'keep-alive';
             options["jar"] = true;
             options["agent"] = new https_1.Agent({ keepAlive: true, rejectUnauthorized: options.rejectUnauthorized });
-            var type1msg = ntlm_client_1.createType1Message(ntlmOptions.workstation, ntlmOptions.domain); // alternate client - ntlm-client
+            var type1msg = (0, ntlm_client_1.createType1Message)(ntlmOptions.workstation, ntlmOptions.domain); // alternate client - ntlm-client
             var opt = Object.assign({}, options);
             opt['method'] = "GET";
             opt.headers['Authorization'] = type1msg;
@@ -49,8 +49,8 @@ var NtlmProvider = /** @class */ (function () {
                     else {
                         if (!response.headers['www-authenticate'])
                             throw new Error('www-authenticate not found on response of second request');
-                        var type2msg = ntlm_client_1.decodeType2Message(response.headers['www-authenticate']);
-                        var type3msg = ntlm_client_1.createType3Message(type2msg, ntlmOptions.username, ntlmOptions.password, ntlmOptions.workstation, ntlmOptions.domain);
+                        var type2msg = (0, ntlm_client_1.decodeType2Message)(response.headers['www-authenticate']);
+                        var type3msg = (0, ntlm_client_1.createType3Message)(type2msg, ntlmOptions.username, ntlmOptions.password, ntlmOptions.workstation, ntlmOptions.domain);
                         delete options.headers['authorization']; // 'fetch' has this wired addition with lower case, with lower case ntlm on server side fails
                         delete options.headers['connection']; // 'fetch' has this wired addition with lower case, with lower case ntlm on server side fails
                         options.headers['Authorization'] = type3msg;

@@ -44,7 +44,7 @@ var ntlmAuthXhrApi = /** @class */ (function () {
             _this.ntlmPreCall(options).then(function (optionsWithNtlmHeader) {
                 optionsWithNtlmHeader['payload'] = xhroptions.data;
                 optionsWithNtlmHeader['method'] = xhroptions.type;
-                fetch_1.fetchUrl(xhroptions.url, optionsWithNtlmHeader, function (error, meta, body) {
+                (0, fetch_1.fetchUrl)(xhroptions.url, optionsWithNtlmHeader, function (error, meta, body) {
                     if (error) {
                         reject(error);
                     }
@@ -59,10 +59,10 @@ var ntlmAuthXhrApi = /** @class */ (function () {
                             statusText: undefined,
                         };
                         if (xhrResponse.status === 200) {
-                            resolve(utils_1.setupXhrResponse(xhrResponse));
+                            resolve((0, utils_1.setupXhrResponse)(xhrResponse));
                         }
                         else {
-                            reject(utils_1.setupXhrResponse(xhrResponse));
+                            reject((0, utils_1.setupXhrResponse)(xhrResponse));
                         }
                     }
                 });
@@ -121,10 +121,10 @@ var ntlmAuthXhrApi = /** @class */ (function () {
             domain: this.domain
         };
         return new Promise(function (resolve, reject) {
-            var type1msg = ntlm_client_1.createType1Message(ntlmOptions.workstation, ntlmOptions.domain);
+            var type1msg = (0, ntlm_client_1.createType1Message)(ntlmOptions.workstation, ntlmOptions.domain);
             options.headers['Authorization'] = type1msg;
             options.headers['Connection'] = 'keep-alive';
-            fetch_1.fetchUrl(options.url, options, function (error, meta, body) {
+            (0, fetch_1.fetchUrl)(options.url, options, function (error, meta, body) {
                 if (error) {
                     reject(error);
                 }
@@ -144,8 +144,8 @@ var ntlmAuthXhrApi = /** @class */ (function () {
         }).then(function (res) {
             if (!res.headers['www-authenticate'])
                 throw new Error('www-authenticate not found on response of second request');
-            var type2msg = ntlm_client_1.decodeType2Message(res.headers['www-authenticate']);
-            var type3msg = ntlm_client_1.createType3Message(type2msg, ntlmOptions.username, ntlmOptions.password, ntlmOptions.workstation, ntlmOptions.domain); //with ntlm-client
+            var type2msg = (0, ntlm_client_1.decodeType2Message)(res.headers['www-authenticate']);
+            var type3msg = (0, ntlm_client_1.createType3Message)(type2msg, ntlmOptions.username, ntlmOptions.password, ntlmOptions.workstation, ntlmOptions.domain); //with ntlm-client
             delete options.headers['authorization']; // 'fetch' has this wired addition with lower case, with lower case ntlm on server side fails
             delete options.headers['connection']; // 'fetch' has this wired addition with lower case, with lower case ntlm on server side fails
             options.headers['Authorization'] = type3msg;

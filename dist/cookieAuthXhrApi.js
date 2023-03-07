@@ -41,7 +41,7 @@ var cookieAuthXhrApi = /** @class */ (function () {
         return new Promise(function (resolve, reject) {
             _this.cookiesPreCall(options).then(function () {
                 options.cookies = _this.cookies;
-                fetch_1.fetchUrl(options.url, options, function (error, meta, body) {
+                (0, fetch_1.fetchUrl)(options.url, options, function (error, meta, body) {
                     if (error) {
                         reject(error);
                     }
@@ -69,10 +69,10 @@ var cookieAuthXhrApi = /** @class */ (function () {
                             statusText: undefined,
                         };
                         if (xhrResponse.status === 200) {
-                            resolve(utils_1.setupXhrResponse(xhrResponse));
+                            resolve((0, utils_1.setupXhrResponse)(xhrResponse));
                         }
                         else {
-                            reject(utils_1.setupXhrResponse(xhrResponse));
+                            reject((0, utils_1.setupXhrResponse)(xhrResponse));
                         }
                     }
                 });
@@ -151,7 +151,7 @@ var cookieAuthXhrApi = /** @class */ (function () {
                     preauthOptions["rejectUnauthorized"] = !_this.allowUntrustedCertificate;
                 }
                 //obtaining cookies
-                fetch_1.fetchUrl(baseUrl, preauthOptions, function (error, meta, body) {
+                (0, fetch_1.fetchUrl)(baseUrl, preauthOptions, function (error, meta, body) {
                     if (error) {
                         reject(error);
                     }

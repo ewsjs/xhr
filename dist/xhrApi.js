@@ -110,6 +110,7 @@ var XhrApi = /** @class */ (function () {
             headers: xhroptions.headers,
             method: xhroptions.type,
             followRedirect: !!xhroptions.allowRedirect,
+            //resolveWithFullResponse: true
         };
         options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
         // if (this.allowUntrustedCertificate) {
@@ -143,15 +144,15 @@ var XhrApi = /** @class */ (function () {
                             statusText: response.statusMessage,
                         };
                         if (xhrResponse.status === 200) {
-                            resolve(utils_1.setupXhrResponse(xhrResponse));
+                            resolve((0, utils_1.setupXhrResponse)(xhrResponse));
                         }
                         else {
-                            reject(utils_1.setupXhrResponse(xhrResponse));
+                            reject((0, utils_1.setupXhrResponse)(xhrResponse));
                         }
                     }
                 });
             }, function (reason) {
-                reject(utils_1.setupXhrResponse(reason));
+                reject((0, utils_1.setupXhrResponse)(reason));
             });
         });
     };
@@ -180,7 +181,7 @@ var XhrApi = /** @class */ (function () {
                 _promise = _this.authProvider.preCall(options);
             }
             _promise.then(function (opt) {
-                _this.stream = request(options);
+                _this.stream = request(opt || options);
                 _this.stream.on('response', function (response) {
                     // unmodified http.IncomingMessage object
                     progressDelegate({ type: "header", headers: response["headers"] });
@@ -201,7 +202,7 @@ var XhrApi = /** @class */ (function () {
                     rejectWithError(reject, error);
                 });
             }, function (reason) {
-                reject(utils_1.setupXhrResponse(reason));
+                reject((0, utils_1.setupXhrResponse)(reason));
             });
         });
     };
@@ -254,5 +255,5 @@ function rejectWithError(reject, reason) {
         }
         catch (e) { }
     }
-    reject(utils_1.setupXhrResponse(xhrResponse));
+    reject((0, utils_1.setupXhrResponse)(xhrResponse));
 }

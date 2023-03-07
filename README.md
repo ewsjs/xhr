@@ -5,6 +5,8 @@ other related libs will also move to @ewsjs scope/org
 
 > 1.3.0 brings several changes, new api and proxy support. this is also re-written using popular `request` package
 
+## 1.5.0 
+#15 use pre-call options in stream
 
 # Install
 

@@ -42,6 +42,7 @@ var proxySupportedXhrApi = /** @class */ (function () {
             headers: xhroptions.headers,
             method: xhroptions.type,
             followRedirect: false,
+            //resolveWithFullResponse: true
         };
         var proxyStr = this.getProxyString();
         if (proxyStr) {
@@ -71,15 +72,15 @@ var proxySupportedXhrApi = /** @class */ (function () {
                             statusText: response.statusMessage,
                         };
                         if (xhrResponse.status === 200) {
-                            resolve(utils_1.setupXhrResponse(xhrResponse));
+                            resolve((0, utils_1.setupXhrResponse)(xhrResponse));
                         }
                         else {
-                            reject(utils_1.setupXhrResponse(xhrResponse));
+                            reject((0, utils_1.setupXhrResponse)(xhrResponse));
                         }
                     }
                 });
             }, function (reason) {
-                reject(utils_1.setupXhrResponse(reason));
+                reject((0, utils_1.setupXhrResponse)(reason));
             });
         });
     };
@@ -125,7 +126,7 @@ var proxySupportedXhrApi = /** @class */ (function () {
                     rejectWithError(reject, error);
                 });
             }, function (reason) {
-                reject(utils_1.setupXhrResponse(reason));
+                reject((0, utils_1.setupXhrResponse)(reason));
             });
         });
     };
@@ -173,5 +174,5 @@ function rejectWithError(reject, reason) {
         }
         catch (e) { }
     }
-    reject(utils_1.setupXhrResponse(xhrResponse));
+    reject((0, utils_1.setupXhrResponse)(xhrResponse));
 }
