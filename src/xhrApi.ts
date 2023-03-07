@@ -222,7 +222,7 @@ export class XhrApi implements IXHRApi {
             }
 
             _promise.then(opt => {
-                this.stream = request(options);
+                this.stream = request(opt || options);
 
                 this.stream.on('response', function (response) {
                     // unmodified http.IncomingMessage object
