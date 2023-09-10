@@ -1,4 +1,3 @@
-import * as Promise from "bluebird";
 export interface IXHROptions {
     type?: string;
     url: string;

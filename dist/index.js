@@ -1,11 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.XhrApi = exports.CookieProvider = exports.NtlmProvider = exports.cookieAuthXhrApi = exports.ntlmAuthXhrApi = void 0;
-var ntlmAuthXhrApi_1 = require("./ntlmAuthXhrApi");
-Object.defineProperty(exports, "ntlmAuthXhrApi", { enumerable: true, get: function () { return ntlmAuthXhrApi_1.ntlmAuthXhrApi; } });
-var cookieAuthXhrApi_1 = require("./cookieAuthXhrApi");
-Object.defineProperty(exports, "cookieAuthXhrApi", { enumerable: true, get: function () { return cookieAuthXhrApi_1.cookieAuthXhrApi; } });
-// export { proxySupportedXhrApi } from "./proxySupportedXhrApi";
+exports.XhrApi = exports.CookieProvider = exports.NtlmProvider = void 0;
 var ntlmProvider_1 = require("./ntlmProvider");
 Object.defineProperty(exports, "NtlmProvider", { enumerable: true, get: function () { return ntlmProvider_1.NtlmProvider; } });
 var cookieProvider_1 = require("./cookieProvider");

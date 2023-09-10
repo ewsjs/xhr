@@ -1,8 +1,9 @@
-import { IXHROptions } from "./ews.partial";
-import * as  Promise from "bluebird";
+import { AxiosRequestConfig, AxiosInstance } from "axios";
 
 export interface IProvider {
-    preCall(options: IXHROptions): Promise<IXHROptions>;
-    providerName: string;
-
+  preCall(options: PreCallConfig): Promise<AxiosRequestConfig>;
+  providerName: string;
+  client: AxiosInstance;
 }
+
+export type PreCallConfig = AxiosRequestConfig & { rejectUnauthorized?: boolean };

@@ -1,12 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CookieProvider = void 0;
-var request = require("request");
-var Promise = require("bluebird");
-var CookieProvider = /** @class */ (function () {
-    function CookieProvider(username, password) {
+const axios_1 = require("axios");
+const http_1 = require("http-cookie-agent/http");
+const tough_cookie_1 = require("tough-cookie");
+class CookieProvider {
+    // private cookies: string[] = [];
+    get providerName() {
+        return "cookie";
+    }
+    constructor(username, password) {
+        this._client = null;
         /**@internal */
-        this.j = null;
+        this.jar = null;
         /**@internal */
         this.username = null;
         /**@internal */
@@ -14,52 +20,47 @@ var CookieProvider = /** @class */ (function () {
         this.username = username || '';
         this.password = password || '';
     }
-    Object.defineProperty(CookieProvider.prototype, "providerName", {
-        // private cookies: string[] = [];
-        get: function () {
-            return "cookie";
-        },
-        enumerable: false,
-        configurable: true
-    });
-    CookieProvider.prototype.preCall = function (options) {
-        var _this = this;
-        return new Promise(function (resolve, reject) {
-            if (options.headers["Authorization"]) {
-                delete options.headers["Authorization"];
+    get client() {
+        return this._client;
+    }
+    async preCall(options) {
+        if (options.headers["Authorization"]) {
+            delete options.headers["Authorization"];
+        }
+        if (!this.jar) {
+            this.jar = new tough_cookie_1.CookieJar();
+            this._client = axios_1.default.create({
+                httpAgent: new http_1.HttpCookieAgent({ cookies: { jar: this.jar } }),
+                httpsAgent: new http_1.HttpsCookieAgent({ cookies: { jar: this.jar }, rejectUnauthorized: options.rejectUnauthorized }),
+            });
+            var parser = CookieProvider.parseString(options.url);
+            var baseUrl = parser.scheme + "://" + parser.authority + "/CookieAuth.dll?Logon";
+            var preauthOptions = Object.assign({}, options, {
+                method: "POST",
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                data: 'curl=Z2F&flags=0&forcedownlevel=0&formdir=1&trusted=0&username=' + this.username + '&password=' + this.password,
+                url: baseUrl,
+                maxRedirects: 0,
+            });
+            try {
+                await this.client(preauthOptions);
+                return options;
             }
-            // if (!this.cookies || this.cookies.length < 1) {
-            if (!_this.j) {
-                if (!_this.j)
-                    _this.j = request.jar();
-                options.jar = _this.j;
-                var parser = CookieProvider.parseString(options.url);
-                var baseUrl = parser.scheme + "://" + parser.authority + "/CookieAuth.dll?Logon";
-                var preauthOptions = Object.assign({}, options, {
-                    method: "POST",
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: 'curl=Z2F&flags=0&forcedownlevel=0&formdir=1&trusted=0&username=' + _this.username + '&password=' + _this.password,
-                    url: baseUrl,
-                    disableRedirects: true,
+            catch (error) {
+                throw error;
+            }
+        }
+        else {
+            if (!this._client)
+                this._client = axios_1.default.create({
+                    httpAgent: new http_1.HttpCookieAgent({ cookies: { jar: this.jar } }),
+                    httpsAgent: new http_1.HttpsCookieAgent({ cookies: { jar: this.jar }, rejectUnauthorized: options.rejectUnauthorized }),
                 });
-                //obtaining cookies
-                request(preauthOptions, function (error, response, body) {
-                    if (error) {
-                        reject(error);
-                    }
-                    else {
-                        resolve(options);
-                    }
-                });
-            }
-            else {
-                options.jar = _this.j;
-                resolve(options);
-            }
-        });
-    };
+            return options;
+        }
+    }
     /**@internal */
-    CookieProvider.parseString = function (url) {
+    static parseString(url) {
         var regex = RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
         var parts = url.match(regex);
         return {
@@ -69,7 +70,6 @@ var CookieProvider = /** @class */ (function () {
             query: parts[7],
             fragment: parts[9]
         };
-    };
-    return CookieProvider;
-}());
+    }
+}
 exports.CookieProvider = CookieProvider;

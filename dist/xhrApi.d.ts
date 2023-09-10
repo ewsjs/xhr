@@ -1,5 +1,4 @@
-import { CoreOptions } from "request";
-import * as Promise from "bluebird";
+import { AxiosRequestConfig } from 'axios';
 import { IXHROptions, IXHRApi, IXHRProgress } from "./ews.partial";
 import { IProvider } from "./IProvider";
 /**
@@ -10,8 +9,8 @@ import { IProvider } from "./IProvider";
  * @implements {IXHRApi}
  */
 export declare class XhrApi implements IXHRApi {
-    static defaultOptions: CoreOptions;
-    requestOptions: CoreOptions;
+    static defaultOptions: AxiosRequestConfig;
+    requestOptions: AxiosRequestConfig;
     private allowUntrustedCertificate;
     private proxyConfig;
     get apiName(): string;
@@ -25,7 +24,9 @@ export declare class XhrApi implements IXHRApi {
      * @param {CoreOptions} requestOptions Options for request
      * @memberof XhrApi
      */
-    constructor(requestOptions: CoreOptions);
+    constructor(requestOptions: AxiosRequestConfig & {
+        rejectUnauthorized?: boolean;
+    });
     /**
      * Creates an instance of XhrApi. optionally pass true to bypass remote ssl/tls certificate check
      * @param {boolean} allowUntrustedCertificate whether to allow non trusted certificate or not
@@ -71,5 +72,6 @@ export declare class XhrApi implements IXHRApi {
     xhrStream(xhroptions: IXHROptions, progressDelegate: (progressData: IXHRProgress) => void): Promise<XMLHttpRequest>;
     disconnect(): void;
     private getProxyString;
+    private getProxyOption;
     private getOptions;
 }

@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.XhrApi = void 0;
-var request = require("request");
-var Promise = require("bluebird");
-var utils_1 = require("./utils");
-var ntlmProvider_1 = require("./ntlmProvider");
-var cookieProvider_1 = require("./cookieProvider");
+const https = require("https");
+const axios_1 = require("axios");
+const utils_1 = require("./utils");
+const ntlmProvider_1 = require("./ntlmProvider");
+const cookieProvider_1 = require("./cookieProvider");
 /**
  * this is alternate XHR Api for ews-javascript-api/ewsjs
  *
@@ -13,9 +13,18 @@ var cookieProvider_1 = require("./cookieProvider");
  * @class XhrApi
  * @implements {IXHRApi}
  */
-var XhrApi = /** @class */ (function () {
-    function XhrApi(aucoro) {
-        if (aucoro === void 0) { aucoro = false; }
+class XhrApi {
+    get apiName() {
+        let n = "request";
+        if (this.proxyConfig.enabled = true) {
+            n += ";proxy:yes";
+        }
+        if (this.authProvider) {
+            n += ";auth:" + this.authProvider.providerName;
+        }
+        return "request";
+    }
+    constructor(aucoro = false) {
         this.requestOptions = {};
         this.proxyConfig = {
             enabled: false,
@@ -33,20 +42,6 @@ var XhrApi = /** @class */ (function () {
             this.allowUntrustedCertificate = !!aucoro;
         }
     }
-    Object.defineProperty(XhrApi.prototype, "apiName", {
-        get: function () {
-            var n = "request";
-            if (this.proxyConfig.enabled = true) {
-                n += ";proxy:yes";
-            }
-            if (this.authProvider) {
-                n += ";auth:" + this.authProvider.providerName;
-            }
-            return "request";
-        },
-        enumerable: false,
-        configurable: true
-    });
     /**
      * Enable use of Proxy server when using this XHR Api
      *
@@ -56,15 +51,13 @@ var XhrApi = /** @class */ (function () {
      * @returns {XhrApi} returns instance for chaining
      * @memberof XhrApi
      */
-    XhrApi.prototype.useProxy = function (url, proxyUserName, proxyPassword) {
-        if (proxyUserName === void 0) { proxyUserName = null; }
-        if (proxyPassword === void 0) { proxyPassword = null; }
+    useProxy(url, proxyUserName = null, proxyPassword = null) {
         if (this.authProvider instanceof ntlmProvider_1.NtlmProvider) {
             throw new Error("NtlmProvider does not work with proxy (yet!)");
         }
         this.proxyConfig = { enabled: url !== null, url: url, userName: proxyUserName, password: proxyPassword };
         return this;
-    };
+    }
     /**
      * use NTLM authentication method, supports Ntlm v2
      *
@@ -73,13 +66,13 @@ var XhrApi = /** @class */ (function () {
      * @returns {XhrApi} returns instance for chaining
      * @memberof XhrApi
      */
-    XhrApi.prototype.useNtlmAuthentication = function (username, password) {
+    useNtlmAuthentication(username, password) {
         if (this.proxyConfig.enabled === true) {
             throw new Error("NtlmProvider does not work with proxy (yet!)");
         }
         this.authProvider = new ntlmProvider_1.NtlmProvider(username, password);
         return this;
-    };
+    }
     /**
      * use cookies authentication method, usually required when hosted behind ISA/TMG
      *
@@ -88,137 +81,138 @@ var XhrApi = /** @class */ (function () {
      * @returns {XhrApi} returns instance for chaining
      * @memberof XhrApi
      */
-    XhrApi.prototype.useCookieAuthentication = function (username, password) {
+    useCookieAuthentication(username, password) {
         this.authProvider = new cookieProvider_1.CookieProvider(username, password);
         return this;
-    };
+    }
     /**
      * set custom IProvider interface, needed for custom IProvider implementing custom precall method
      *
      * @param {IProvider} authProvider auth provider implementing IProvider interface
      * @memberof XhrApi
      */
-    XhrApi.prototype.setAuthProvider = function (authProvider) {
+    setAuthProvider(authProvider) {
         this.authProvider = authProvider;
-    };
-    XhrApi.prototype.xhr = function (xhroptions, progressDelegate) {
-        var _this = this;
+    }
+    async xhr(xhroptions, progressDelegate) {
+        let client = axios_1.default.create();
         //setup xhr for github.com/andris9/fetch options
-        var options = {
+        let options = {
             url: xhroptions.url,
-            body: xhroptions.data,
+            data: xhroptions.data,
             headers: xhroptions.headers,
             method: xhroptions.type,
-            followRedirect: !!xhroptions.allowRedirect,
+            maxRedirects: !xhroptions.allowRedirect ? 0 : 5,
             //resolveWithFullResponse: true
         };
-        options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
-        // if (this.allowUntrustedCertificate) {
-        //     options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
-        // }
-        var proxyStr = this.getProxyString();
-        if (proxyStr) {
-            options["proxy"] = proxyStr;
+        if (this.allowUntrustedCertificate) {
+            options.httpsAgent = new https.Agent({ rejectUnauthorized: false });
+        }
+        let proxyConfig = this.getProxyOption();
+        if (proxyConfig) {
+            options["proxy"] = proxyConfig;
         }
         options = this.getOptions(options);
-        return new Promise(function (resolve, reject) {
-            var _promise = Promise.resolve(options);
-            if (_this.authProvider) {
-                _promise = _this.authProvider.preCall(options);
+        let _promise = Promise.resolve(options);
+        try {
+            if (this.authProvider) {
+                _promise = this.authProvider.preCall({ ...options, rejectUnauthorized: !this.allowUntrustedCertificate });
+                client = this.authProvider.client || client;
             }
-            _promise.then(function (opt) {
-                // console.log("in proxy");
-                // console.log(opt);
-                request(opt || options, function (error, response, body) {
-                    if (error) {
-                        rejectWithError(reject, error);
-                    }
-                    else {
-                        var xhrResponse = {
-                            response: body ? body.toString() : '',
-                            status: response.statusCode,
-                            //redirectCount: meta.redirectCount,
-                            headers: response.headers,
-                            finalUrl: response.url,
-                            responseType: '',
-                            statusText: response.statusMessage,
-                        };
-                        if (xhrResponse.status === 200) {
-                            resolve((0, utils_1.setupXhrResponse)(xhrResponse));
-                        }
-                        else {
-                            reject((0, utils_1.setupXhrResponse)(xhrResponse));
-                        }
-                    }
-                });
-            }, function (reason) {
-                reject((0, utils_1.setupXhrResponse)(reason));
-            });
-        });
-    };
-    XhrApi.prototype.xhrStream = function (xhroptions, progressDelegate) {
-        var _this = this;
+            const opt = await _promise;
+            console.log("in xhr");
+            // console.log({ opt });
+            const response = await client(opt || options);
+            // if (error) {
+            //   rejectWithError(reject, error);
+            // }
+            let xhrResponse = {
+                response: response.data ? response.data.toString() : '',
+                status: response.status,
+                //redirectCount: meta.redirectCount,
+                headers: response.headers,
+                finalUrl: response.headers.location || response.request.res.responseUrl,
+                responseType: '',
+                statusText: response.statusText,
+            };
+            if (xhrResponse.status === 200) {
+                return (0, utils_1.setupXhrResponse)(xhrResponse);
+            }
+            else {
+                throw (0, utils_1.setupXhrResponse)(xhrResponse);
+            }
+        }
+        catch (error) {
+            throw (0, utils_1.setupXhrResponse)(error);
+        }
+    }
+    xhrStream(xhroptions, progressDelegate) {
+        let client = axios_1.default.create();
         //setup xhr for github.com/andris9/fetch options
-        var options = {
+        let options = {
             url: xhroptions.url,
-            body: xhroptions.data,
+            data: xhroptions.data,
             headers: xhroptions.headers,
             method: xhroptions.type,
-            followRedirect: false,
+            maxRedirects: !xhroptions.allowRedirect ? 0 : 5,
+            responseType: 'stream',
         };
-        options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
-        // if (this.allowUntrustedCertificate) {
-        //     options["rejectUnauthorized"] = !this.allowUntrustedCertificate;
-        // }
-        var proxyStr = this.getProxyString();
-        if (proxyStr) {
-            options["proxy"] = proxyStr;
+        if (this.allowUntrustedCertificate) {
+            options.httpsAgent = new https.Agent({ rejectUnauthorized: false });
+        }
+        let proxyConfig = this.getProxyOption();
+        if (proxyConfig) {
+            options["proxy"] = proxyConfig;
         }
         options = this.getOptions(options);
-        return new Promise(function (resolve, reject) {
-            var _promise = Promise.resolve(options);
-            if (_this.authProvider) {
-                _promise = _this.authProvider.preCall(options);
+        console.log('axios - streaming');
+        return new Promise((resolve, reject) => {
+            let _promise = Promise.resolve(options);
+            if (this.authProvider) {
+                _promise = this.authProvider.preCall({ ...options, rejectUnauthorized: !this.allowUntrustedCertificate });
+                client = this.authProvider.client || client;
             }
-            _promise.then(function (opt) {
-                _this.stream = request(opt || options);
-                _this.stream.on('response', function (response) {
+            _promise.then(async (opt) => {
+                console.log('axios - streaming with opt');
+                const response = await client(opt || options);
+                this.stream = response.data;
+                this.stream.on('response', function (response) {
                     // unmodified http.IncomingMessage object
                     progressDelegate({ type: "header", headers: response["headers"] });
                 });
-                _this.stream.on("data", function (chunk) {
+                this.stream.on("data", (chunk) => {
                     // decompressed data as it is received
                     // console.log('decoded chunk: ' + chunk)
                     // console.log(chunk.toString());
                     progressDelegate({ type: "data", data: chunk.toString() });
                 });
-                _this.stream.on("end", function () {
+                this.stream.on("end", () => {
                     progressDelegate({ type: "end" });
-                    resolve();
+                    resolve(null);
                 });
-                _this.stream.on('error', function (error) {
+                this.stream.on('error', (error) => {
                     progressDelegate({ type: "error", error: error });
-                    _this.disconnect();
+                    this.disconnect();
                     rejectWithError(reject, error);
                 });
-            }, function (reason) {
+            }, reason => {
                 reject((0, utils_1.setupXhrResponse)(reason));
             });
         });
-    };
-    XhrApi.prototype.disconnect = function () {
+    }
+    disconnect() {
         if (this.stream) {
             try {
                 this.stream.destroy();
             }
             catch (e) { }
         }
-    };
-    XhrApi.prototype.getProxyString = function () {
+    }
+    getProxyString() {
         if (this.proxyConfig.enabled) {
-            var url = this.proxyConfig.url;
+            let url = this.proxyConfig.url;
             if (this.proxyConfig.userName && this.proxyConfig.password) {
-                var proxyParts = url.split("://");
+                let proxyParts = url.split("://");
                 return (proxyParts[0] + "://" + encodeURIComponent(this.proxyConfig.userName) + ":" + encodeURIComponent(this.proxyConfig.password) + "@" + proxyParts[1]);
             }
             else {
@@ -226,17 +220,41 @@ var XhrApi = /** @class */ (function () {
             }
         }
         return null;
-    };
-    XhrApi.prototype.getOptions = function (opts) {
-        var headers = Object.assign({}, (XhrApi.defaultOptions || {}).headers, (this.requestOptions || {}).headers, (opts || {}).headers);
-        return Object.assign({}, XhrApi.defaultOptions, this.requestOptions, opts, { headers: headers });
-    };
-    XhrApi.defaultOptions = {};
-    return XhrApi;
-}());
+    }
+    getProxyOption() {
+        if (this.proxyConfig.enabled) {
+            let url = this.proxyConfig.url;
+            let proxyParts = new URL(url);
+            if (this.proxyConfig.userName && this.proxyConfig.password) {
+                return {
+                    protocol: proxyParts.protocol,
+                    host: proxyParts.host,
+                    port: proxyParts.port ? Number(proxyParts.port) : 80,
+                    auth: {
+                        username: this.proxyConfig.userName,
+                        password: this.proxyConfig.password
+                    }
+                };
+            }
+            else {
+                return {
+                    protocol: proxyParts.protocol,
+                    host: proxyParts.host,
+                    port: proxyParts.port ? Number(proxyParts.port) : 80,
+                };
+            }
+        }
+        return null;
+    }
+    getOptions(opts) {
+        let headers = Object.assign({}, (XhrApi.defaultOptions || {}).headers, (this.requestOptions || {}).headers, (opts || {}).headers);
+        return Object.assign({}, XhrApi.defaultOptions, this.requestOptions, opts, { headers });
+    }
+}
 exports.XhrApi = XhrApi;
+XhrApi.defaultOptions = {};
 function rejectWithError(reject, reason) {
-    var xhrResponse = {
+    let xhrResponse = {
         response: reason.response && reason.response.body ? reason.response.body.toString() : '',
         status: reason.statusCode,
         //redirectCount: meta.redirectCount,
@@ -248,7 +266,7 @@ function rejectWithError(reject, reason) {
     };
     if (typeof xhrResponse.status === 'undefined' && reason.message) {
         try {
-            var parse = reason.message.match(/statusCode=(\d*?)$/);
+            let parse = reason.message.match(/statusCode=(\d*?)$/);
             if (parse && parse.length > 1) {
                 xhrResponse["status"] = Number(parse[1]);
             }

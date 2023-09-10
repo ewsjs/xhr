@@ -14,7 +14,7 @@ function setupXhrResponse(xhrResponse) {
         }
         return header;
     };
-    xhrResponse.getResponseHeader = function (header) {
+    xhrResponse.getResponseHeader = (header) => {
         if (header) {
             if (xhrResponse.headers) {
                 if (xhrResponse.headers[header]) {

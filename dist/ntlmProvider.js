@@ -1,12 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NtlmProvider = void 0;
-var request = require("request");
-var Promise = require("bluebird");
-var ntlm_client_1 = require("@ewsjs/ntlm-client");
-var https_1 = require("https");
-var NtlmProvider = /** @class */ (function () {
-    function NtlmProvider(username, password) {
+const axios_1 = require("axios");
+const ntlm_client_1 = require("@ewsjs/ntlm-client");
+const https_1 = require("https");
+class NtlmProvider {
+    get providerName() {
+        return "ntlm";
+    }
+    constructor(username, password) {
+        this._client = null;
         this.username = null;
         this.password = null;
         this.domain = '';
@@ -17,53 +20,40 @@ var NtlmProvider = /** @class */ (function () {
             this.domain = username.split("\\")[0].toUpperCase();
         }
     }
-    Object.defineProperty(NtlmProvider.prototype, "providerName", {
-        get: function () {
-            return "ntlm";
-        },
-        enumerable: false,
-        configurable: true
-    });
-    NtlmProvider.prototype.preCall = function (options) {
-        var ntlmOptions = {
+    get client() {
+        return this._client;
+    }
+    async preCall(options) {
+        let ntlmOptions = {
             url: options.url,
             username: this.username,
             password: this.password,
             workstation: options['workstation'] || '.',
             domain: this.domain,
         };
-        return new Promise(function (resolve, reject) {
-            options.headers['Connection'] = 'keep-alive';
-            options["jar"] = true;
-            options["agent"] = new https_1.Agent({ keepAlive: true, rejectUnauthorized: options.rejectUnauthorized });
-            var type1msg = (0, ntlm_client_1.createType1Message)(ntlmOptions.workstation, ntlmOptions.domain); // alternate client - ntlm-client
-            var opt = Object.assign({}, options);
-            opt['method'] = "GET";
-            opt.headers['Authorization'] = type1msg;
-            delete opt['body'];
-            request(opt, function (error, response, body) {
-                try {
-                    if (error) {
-                        reject(error);
-                    }
-                    else {
-                        if (!response.headers['www-authenticate'])
-                            throw new Error('www-authenticate not found on response of second request');
-                        var type2msg = (0, ntlm_client_1.decodeType2Message)(response.headers['www-authenticate']);
-                        var type3msg = (0, ntlm_client_1.createType3Message)(type2msg, ntlmOptions.username, ntlmOptions.password, ntlmOptions.workstation, ntlmOptions.domain);
-                        delete options.headers['authorization']; // 'fetch' has this wired addition with lower case, with lower case ntlm on server side fails
-                        delete options.headers['connection']; // 'fetch' has this wired addition with lower case, with lower case ntlm on server side fails
-                        options.headers['Authorization'] = type3msg;
-                        options.headers['Connection'] = 'Close';
-                        resolve(options);
-                    }
-                }
-                catch (err) {
-                    reject(err);
-                }
-            });
-        });
-    };
-    return NtlmProvider;
-}());
+        options.headers['Connection'] = 'keep-alive';
+        options.httpsAgent = new https_1.Agent({ keepAlive: true, rejectUnauthorized: options.rejectUnauthorized });
+        let type1msg = (0, ntlm_client_1.createType1Message)(ntlmOptions.workstation, ntlmOptions.domain); // alternate client - ntlm-client
+        let opt = Object.assign({}, options);
+        opt['method'] = "GET";
+        opt.headers['Authorization'] = type1msg;
+        delete opt['data'];
+        delete opt['responseType'];
+        try {
+            const response = await (0, axios_1.default)(opt).catch(err => err.response);
+            if (!response.headers['www-authenticate'])
+                throw new Error('www-authenticate not found on response of second request');
+            let type2msg = (0, ntlm_client_1.decodeType2Message)(response.headers['www-authenticate']);
+            let type3msg = (0, ntlm_client_1.createType3Message)(type2msg, ntlmOptions.username, ntlmOptions.password, ntlmOptions.workstation, ntlmOptions.domain);
+            delete options.headers['authorization']; // 'fetch' has this wired addition with lower case, with lower case ntlm on server side fails
+            delete options.headers['connection']; // 'fetch' has this wired addition with lower case, with lower case ntlm on server side fails
+            options.headers['Authorization'] = type3msg;
+            options.headers['Connection'] = 'Close';
+            return options;
+        }
+        catch (err) {
+            throw err;
+        }
+    }
+}
 exports.NtlmProvider = NtlmProvider;
