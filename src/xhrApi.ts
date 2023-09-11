@@ -1,6 +1,6 @@
 import * as https from 'https';
 import axios, { AxiosRequestConfig, AxiosProxyConfig } from 'axios';
-import { IXHROptions, IXHRApi, IXHRProgress } from "./ews.partial";
+import { IXHROptions, IXHRApi, IXHRProgress } from "../types/ews.partial";
 import { setupXhrResponse } from "./utils";
 
 import { IProvider } from "./IProvider";
