@@ -159,7 +159,6 @@ export class XhrApi implements IXHRApi {
         client = this.authProvider.client || client;
       }
       const opt = await _promise;
-      console.log("in xhr");
       // console.log({ opt });
       const response = await client(opt || options as any);
 
