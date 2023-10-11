@@ -120,7 +120,6 @@ class XhrApi {
                 client = this.authProvider.client || client;
             }
             const opt = await _promise;
-            console.log("in xhr");
             // console.log({ opt });
             const response = await client(opt || options);
             // if (error) {
