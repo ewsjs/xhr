@@ -16,13 +16,13 @@ const cookieProvider_1 = require("./cookieProvider");
 class XhrApi {
     get apiName() {
         let n = "request";
-        if (this.proxyConfig.enabled = true) {
+        if (this.proxyConfig.enabled) {
             n += ";proxy:yes";
         }
         if (this.authProvider) {
             n += ";auth:" + this.authProvider.providerName;
         }
-        return "request";
+        return n;
     }
     constructor(aucoro = false) {
         this.requestOptions = {};
