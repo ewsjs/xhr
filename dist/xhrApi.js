@@ -120,10 +120,10 @@ class XhrApi {
                 client = this.authProvider.client || client;
             }
             const opt = await _promise;
-            // console.log({ opt });
+            // console.log({ opt })
             const response = await client(opt || options);
             // if (error) {
-            //   rejectWithError(reject, error);
+            //   rejectWithError(reject, error)
             // }
             let xhrResponse = {
                 response: response.data ? response.data.toString() : '',
@@ -180,7 +180,7 @@ class XhrApi {
                 this.stream.on("data", (chunk) => {
                     // decompressed data as it is received
                     // console.log('decoded chunk: ' + chunk)
-                    // console.log(chunk.toString());
+                    // console.log(chunk.toString())
                     progressDelegate({ type: "data", data: chunk.toString() });
                 });
                 this.stream.on("end", () => {

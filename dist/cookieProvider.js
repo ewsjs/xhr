@@ -5,7 +5,7 @@ const axios_1 = require("axios");
 const http_1 = require("http-cookie-agent/http");
 const tough_cookie_1 = require("tough-cookie");
 class CookieProvider {
-    // private cookies: string[] = [];
+    // private cookies: string[] = []
     get providerName() {
         return "cookie";
     }
