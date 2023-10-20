@@ -1,12 +1,12 @@
 /** @internal */
 export function setupXhrResponse(xhrResponse: XMLHttpRequest): XMLHttpRequest {
-    xhrResponse[<any>"responseText"] = xhrResponse["response"]
-    delete (<any>xhrResponse)["response"]
+    xhrResponse[<any>'responseText'] = xhrResponse['response']
+    delete (<any>xhrResponse)['response']
     xhrResponse.getAllResponseHeaders = function () {
-        let header = ""
+        let header = ''
         if ((<any>xhrResponse).headers) {
             for (const key in (<any>xhrResponse).headers) {
-                header += key + " : " + (<any>xhrResponse).headers[key] + "\r\n"
+                header += `${key} : ${(<any>xhrResponse).headers[key]}\r\n`
             }
         }
         return header

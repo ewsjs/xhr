@@ -1,8 +1,8 @@
-import axios, { AxiosRequestConfig, AxiosInstance } from "axios"
-import { createType1Message, decodeType2Message, createType3Message } from "@ewsjs/ntlm-client"
-import { Agent as httpsAgent } from "https"
+import axios, { AxiosRequestConfig, AxiosInstance } from 'axios'
+import { createType1Message, decodeType2Message, createType3Message } from '@ewsjs/ntlm-client'
+import { Agent as httpsAgent } from 'https'
 
-import { IProvider, PreCallConfig } from "./IProvider"
+import { IProvider, PreCallConfig } from './IProvider'
 
 export class NtlmProvider implements IProvider {
 
@@ -13,7 +13,7 @@ export class NtlmProvider implements IProvider {
   private domain: string = ''
 
   get providerName(): string {
-    return "ntlm"
+    return 'ntlm'
   }
 
   constructor(username: string, password: string) {
@@ -21,9 +21,9 @@ export class NtlmProvider implements IProvider {
     this.username = username || ''
     this.password = password || ''
 
-    if (username.indexOf("\\") > 0) {
-      this.username = username.split("\\")[1]
-      this.domain = username.split("\\")[0].toUpperCase()
+    if (username.indexOf('\\') > 0) {
+      this.username = username.split('\\')[1]
+      this.domain = username.split('\\')[0].toUpperCase()
     }
   }
 
@@ -45,7 +45,7 @@ export class NtlmProvider implements IProvider {
     options.httpsAgent = new httpsAgent({ keepAlive: true, rejectUnauthorized: options.rejectUnauthorized })
     let type1msg = createType1Message(ntlmOptions.workstation, ntlmOptions.domain) // alternate client - ntlm-client
     let opt: AxiosRequestConfig = (<any>Object).assign({}, options)
-    opt['method'] = "GET"
+    opt['method'] = 'GET'
     opt.headers['Authorization'] = type1msg
     delete opt['data']
     delete opt['responseType']

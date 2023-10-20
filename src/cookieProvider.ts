@@ -1,8 +1,8 @@
-import axios, { AxiosRequestConfig, AxiosInstance } from "axios"
+import axios, { AxiosRequestConfig, AxiosInstance } from 'axios'
 import { HttpCookieAgent, HttpsCookieAgent, createCookieAgent } from 'http-cookie-agent/http'
 import { CookieJar } from 'tough-cookie'
 
-import { IProvider, PreCallConfig } from "./IProvider"
+import { IProvider, PreCallConfig } from './IProvider'
 
 export class CookieProvider implements IProvider {
   private _client: AxiosInstance = null
@@ -15,7 +15,7 @@ export class CookieProvider implements IProvider {
   // private cookies: string[] = []
 
   get providerName(): string {
-    return "cookie"
+    return 'cookie'
   }
 
   constructor(username: string, password: string) {
@@ -28,8 +28,8 @@ export class CookieProvider implements IProvider {
   }
 
   async preCall(options: PreCallConfig) {
-    if (options.headers["Authorization"]) {
-      delete options.headers["Authorization"]
+    if (options.headers['Authorization']) {
+      delete options.headers['Authorization']
     }
 
     if (!this.jar) {
@@ -40,11 +40,11 @@ export class CookieProvider implements IProvider {
       })
 
       const parser = CookieProvider.parseString(options.url)
-      const baseUrl = parser.scheme + "://" + parser.authority + "/CookieAuth.dll?Logon"
+      const baseUrl = `${parser.scheme}://${parser.authority}/CookieAuth.dll?Logon`
       const preauthOptions = Object.assign({}, options, <AxiosRequestConfig>{
-        method: "POST",
+        method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        data: 'curl=Z2F&flags=0&forcedownlevel=0&formdir=1&trusted=0&username=' + this.username + '&password=' + this.password,
+        data: `curl=Z2F&flags=0&forcedownlevel=0&formdir=1&trusted=0&username=${this.username}&password=${this.password}`,
         url: baseUrl,
         maxRedirects: 0,
       })
@@ -66,7 +66,7 @@ export class CookieProvider implements IProvider {
 
   /**@internal */
   private static parseString(url: string) {
-    const regex = RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?")
+    const regex = RegExp('^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?')
     const parts = url.match(regex)
     return {
       scheme: parts[2],

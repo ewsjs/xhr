@@ -3,13 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.setupXhrResponse = void 0;
 /** @internal */
 function setupXhrResponse(xhrResponse) {
-    xhrResponse["responseText"] = xhrResponse["response"];
-    delete xhrResponse["response"];
+    xhrResponse['responseText'] = xhrResponse['response'];
+    delete xhrResponse['response'];
     xhrResponse.getAllResponseHeaders = function () {
-        let header = "";
+        let header = '';
         if (xhrResponse.headers) {
             for (const key in xhrResponse.headers) {
-                header += key + " : " + xhrResponse.headers[key] + "\r\n";
+                header += `${key} : ${xhrResponse.headers[key]}\r\n`;
             }
         }
         return header;

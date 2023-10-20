@@ -1,4 +1,4 @@
-import { AxiosRequestConfig, AxiosInstance } from "axios"
+import { AxiosRequestConfig, AxiosInstance } from 'axios'
 
 export interface IProvider {
   preCall(options: PreCallConfig): Promise<AxiosRequestConfig>

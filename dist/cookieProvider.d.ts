@@ -1,5 +1,5 @@
-import { AxiosInstance } from "axios";
-import { IProvider, PreCallConfig } from "./IProvider";
+import { AxiosInstance } from 'axios';
+import { IProvider, PreCallConfig } from './IProvider';
 export declare class CookieProvider implements IProvider {
     private _client;
     get providerName(): string;

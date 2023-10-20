@@ -7,7 +7,7 @@ const tough_cookie_1 = require("tough-cookie");
 class CookieProvider {
     // private cookies: string[] = []
     get providerName() {
-        return "cookie";
+        return 'cookie';
     }
     constructor(username, password) {
         this._client = null;
@@ -24,8 +24,8 @@ class CookieProvider {
         return this._client;
     }
     async preCall(options) {
-        if (options.headers["Authorization"]) {
-            delete options.headers["Authorization"];
+        if (options.headers['Authorization']) {
+            delete options.headers['Authorization'];
         }
         if (!this.jar) {
             this.jar = new tough_cookie_1.CookieJar();
@@ -34,11 +34,11 @@ class CookieProvider {
                 httpsAgent: new http_1.HttpsCookieAgent({ cookies: { jar: this.jar }, rejectUnauthorized: options.rejectUnauthorized }),
             });
             const parser = CookieProvider.parseString(options.url);
-            const baseUrl = parser.scheme + "://" + parser.authority + "/CookieAuth.dll?Logon";
+            const baseUrl = `${parser.scheme}://${parser.authority}/CookieAuth.dll?Logon`;
             const preauthOptions = Object.assign({}, options, {
-                method: "POST",
+                method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                data: 'curl=Z2F&flags=0&forcedownlevel=0&formdir=1&trusted=0&username=' + this.username + '&password=' + this.password,
+                data: `curl=Z2F&flags=0&forcedownlevel=0&formdir=1&trusted=0&username=${this.username}&password=${this.password}`,
                 url: baseUrl,
                 maxRedirects: 0,
             });
@@ -61,7 +61,7 @@ class CookieProvider {
     }
     /**@internal */
     static parseString(url) {
-        const regex = RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
+        const regex = RegExp('^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?');
         const parts = url.match(regex);
         return {
             scheme: parts[2],

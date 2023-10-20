@@ -1,9 +1,9 @@
 import * as https from 'https'
 import axios, { AxiosRequestConfig, AxiosProxyConfig } from 'axios'
-import { IXHROptions, IXHRApi, IXHRProgress } from "../types/ews.partial"
-import { setupXhrResponse } from "./utils"
+import { IXHROptions, IXHRApi, IXHRProgress } from '../types/ews.partial'
+import { setupXhrResponse } from './utils'
 
-import { IProvider } from "./IProvider"
+import { IProvider } from './IProvider'
 import { NtlmProvider } from './ntlmProvider'
 import { CookieProvider } from './cookieProvider'
 
@@ -32,12 +32,12 @@ export class XhrApi implements IXHRApi {
   }
 
   get apiName(): string {
-    let n = "request"
+    let n = 'request'
     if (this.proxyConfig.enabled) {
-      n += ";proxy:yes"
+      n += ';proxy:yes'
     }
     if (this.authProvider) {
-      n += ";auth:" + this.authProvider.providerName
+      n += `;auth:${this.authProvider.providerName}`
     }
     return n
   }
@@ -79,7 +79,7 @@ export class XhrApi implements IXHRApi {
    */
   useProxy(url: string, proxyUserName: string = null, proxyPassword: string = null): XhrApi {
     if (this.authProvider instanceof NtlmProvider) {
-      throw new Error("NtlmProvider does not work with proxy (yet!)")
+      throw new Error('NtlmProvider does not work with proxy (yet!)')
     }
     this.proxyConfig = { enabled: url !== null, url: url, userName: proxyUserName, password: proxyPassword }
     return this
@@ -95,7 +95,7 @@ export class XhrApi implements IXHRApi {
    */
   useNtlmAuthentication(username: string, password: string): XhrApi {
     if (this.proxyConfig.enabled === true) {
-      throw new Error("NtlmProvider does not work with proxy (yet!)")
+      throw new Error('NtlmProvider does not work with proxy (yet!)')
     }
     this.authProvider = new NtlmProvider(username, password)
     return this
@@ -146,7 +146,7 @@ export class XhrApi implements IXHRApi {
 
     let proxyConfig = this.getProxyOption()
     if (proxyConfig) {
-      options["proxy"] = proxyConfig
+      options['proxy'] = proxyConfig
     }
     options = this.getOptions(options)
 
@@ -206,7 +206,7 @@ export class XhrApi implements IXHRApi {
 
     let proxyConfig = this.getProxyOption()
     if (proxyConfig) {
-      options["proxy"] = proxyConfig
+      options['proxy'] = proxyConfig
     }
     options = this.getOptions(options)
 
@@ -225,22 +225,22 @@ export class XhrApi implements IXHRApi {
 
         this.stream.on('response', function (response) {
           // unmodified http.IncomingMessage object
-          progressDelegate({ type: "header", headers: response["headers"] })
+          progressDelegate({ type: 'header', headers: response['headers'] })
         })
-        this.stream.on("data", (chunk) => {
+        this.stream.on('data', (chunk) => {
           // decompressed data as it is received
-          // console.log('decoded chunk: ' + chunk)
+          // console.log('decoded chunk: ', chunk)
           // console.log(chunk.toString())
-          progressDelegate({ type: "data", data: chunk.toString() })
+          progressDelegate({ type: 'data', data: chunk.toString() })
         })
 
-        this.stream.on("end", () => {
-          progressDelegate({ type: "end" })
+        this.stream.on('end', () => {
+          progressDelegate({ type: 'end' })
           resolve(null)
         })
 
         this.stream.on('error', (error) => {
-          progressDelegate({ type: "error", error: error })
+          progressDelegate({ type: 'error', error: error })
           this.disconnect()
           rejectWithError(reject, error)
         })
@@ -263,8 +263,8 @@ export class XhrApi implements IXHRApi {
     if (this.proxyConfig.enabled) {
       let url: string = this.proxyConfig.url
       if (this.proxyConfig.userName && this.proxyConfig.password) {
-        let proxyParts = url.split("://")
-        return (proxyParts[0] + "://" + encodeURIComponent(this.proxyConfig.userName) + ":" + encodeURIComponent(this.proxyConfig.password) + "@" + proxyParts[1])
+        let proxyParts = url.split('://')
+        return (`${proxyParts[0]}://${encodeURIComponent(this.proxyConfig.userName)}:${encodeURIComponent(this.proxyConfig.password)}@${proxyParts[1]}`)
       }
       else {
         return url
@@ -321,7 +321,7 @@ function rejectWithError(reject: Function, reason) {
     try {
       let parse: any[] = reason.message.match(/statusCode=(\d*?)$/)
       if (parse && parse.length > 1) {
-        xhrResponse[<any>"status"] = Number(parse[1])
+        xhrResponse[<any>'status'] = Number(parse[1])
       }
     } catch (e) { }
   }

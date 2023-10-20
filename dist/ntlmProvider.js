@@ -6,7 +6,7 @@ const ntlm_client_1 = require("@ewsjs/ntlm-client");
 const https_1 = require("https");
 class NtlmProvider {
     get providerName() {
-        return "ntlm";
+        return 'ntlm';
     }
     constructor(username, password) {
         this._client = null;
@@ -15,9 +15,9 @@ class NtlmProvider {
         this.domain = '';
         this.username = username || '';
         this.password = password || '';
-        if (username.indexOf("\\") > 0) {
-            this.username = username.split("\\")[1];
-            this.domain = username.split("\\")[0].toUpperCase();
+        if (username.indexOf('\\') > 0) {
+            this.username = username.split('\\')[1];
+            this.domain = username.split('\\')[0].toUpperCase();
         }
     }
     get client() {
@@ -35,7 +35,7 @@ class NtlmProvider {
         options.httpsAgent = new https_1.Agent({ keepAlive: true, rejectUnauthorized: options.rejectUnauthorized });
         let type1msg = (0, ntlm_client_1.createType1Message)(ntlmOptions.workstation, ntlmOptions.domain); // alternate client - ntlm-client
         let opt = Object.assign({}, options);
-        opt['method'] = "GET";
+        opt['method'] = 'GET';
         opt.headers['Authorization'] = type1msg;
         delete opt['data'];
         delete opt['responseType'];
