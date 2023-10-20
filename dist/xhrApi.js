@@ -164,7 +164,6 @@ class XhrApi {
             options["proxy"] = proxyConfig;
         }
         options = this.getOptions(options);
-        console.log('axios - streaming');
         return new Promise((resolve, reject) => {
             let _promise = Promise.resolve(options);
             if (this.authProvider) {
@@ -172,7 +171,6 @@ class XhrApi {
                 client = this.authProvider.client || client;
             }
             _promise.then(async (opt) => {
-                console.log('axios - streaming with opt');
                 const response = await client(opt || options);
                 this.stream = response.data;
                 this.stream.on('response', function (response) {

@@ -210,7 +210,6 @@ export class XhrApi implements IXHRApi {
     }
     options = this.getOptions(options)
 
-    console.log('axios - streaming');
     return new Promise<XMLHttpRequest>((resolve, reject) => {
 
       let _promise: Promise<AxiosRequestConfig> = Promise.resolve(options);
@@ -221,7 +220,6 @@ export class XhrApi implements IXHRApi {
       }
 
       _promise.then(async opt => {
-        console.log('axios - streaming with opt');
         const response = await client(opt || options)
         this.stream = response.data;
 
