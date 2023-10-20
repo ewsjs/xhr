@@ -33,9 +33,9 @@ class CookieProvider {
                 httpAgent: new http_1.HttpCookieAgent({ cookies: { jar: this.jar } }),
                 httpsAgent: new http_1.HttpsCookieAgent({ cookies: { jar: this.jar }, rejectUnauthorized: options.rejectUnauthorized }),
             });
-            var parser = CookieProvider.parseString(options.url);
-            var baseUrl = parser.scheme + "://" + parser.authority + "/CookieAuth.dll?Logon";
-            var preauthOptions = Object.assign({}, options, {
+            const parser = CookieProvider.parseString(options.url);
+            const baseUrl = parser.scheme + "://" + parser.authority + "/CookieAuth.dll?Logon";
+            const preauthOptions = Object.assign({}, options, {
                 method: "POST",
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 data: 'curl=Z2F&flags=0&forcedownlevel=0&formdir=1&trusted=0&username=' + this.username + '&password=' + this.password,
@@ -61,8 +61,8 @@ class CookieProvider {
     }
     /**@internal */
     static parseString(url) {
-        var regex = RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
-        var parts = url.match(regex);
+        const regex = RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
+        const parts = url.match(regex);
         return {
             scheme: parts[2],
             authority: parts[4],

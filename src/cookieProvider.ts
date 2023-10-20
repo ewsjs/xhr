@@ -39,9 +39,9 @@ export class CookieProvider implements IProvider {
         httpsAgent: new HttpsCookieAgent({ cookies: { jar: this.jar }, rejectUnauthorized: options.rejectUnauthorized }),
       })
 
-      var parser = CookieProvider.parseString(options.url)
-      var baseUrl = parser.scheme + "://" + parser.authority + "/CookieAuth.dll?Logon"
-      var preauthOptions = Object.assign({}, options, <AxiosRequestConfig>{
+      const parser = CookieProvider.parseString(options.url)
+      const baseUrl = parser.scheme + "://" + parser.authority + "/CookieAuth.dll?Logon"
+      const preauthOptions = Object.assign({}, options, <AxiosRequestConfig>{
         method: "POST",
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         data: 'curl=Z2F&flags=0&forcedownlevel=0&formdir=1&trusted=0&username=' + this.username + '&password=' + this.password,
@@ -66,8 +66,8 @@ export class CookieProvider implements IProvider {
 
   /**@internal */
   private static parseString(url: string) {
-    var regex = RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?")
-    var parts = url.match(regex)
+    const regex = RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?")
+    const parts = url.match(regex)
     return {
       scheme: parts[2],
       authority: parts[4],

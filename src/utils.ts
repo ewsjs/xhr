@@ -3,9 +3,9 @@ export function setupXhrResponse(xhrResponse: XMLHttpRequest): XMLHttpRequest {
     xhrResponse[<any>"responseText"] = xhrResponse["response"]
     delete (<any>xhrResponse)["response"]
     xhrResponse.getAllResponseHeaders = function () {
-        var header = ""
+        let header = ""
         if ((<any>xhrResponse).headers) {
-            for (var key in (<any>xhrResponse).headers) {
+            for (const key in (<any>xhrResponse).headers) {
                 header += key + " : " + (<any>xhrResponse).headers[key] + "\r\n"
             }
         }
