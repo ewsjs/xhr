@@ -1,6 +1,6 @@
 import { AxiosRequestConfig } from 'axios';
-import { IXHROptions, IXHRApi, IXHRProgress } from "../types/ews.partial";
-import { IProvider } from "./IProvider";
+import { IXHROptions, IXHRApi, IXHRProgress } from '../types/ews.partial';
+import { IProvider } from './IProvider';
 /**
  * this is alternate XHR Api for ews-javascript-api/ewsjs
  *

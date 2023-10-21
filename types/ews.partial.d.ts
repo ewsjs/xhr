@@ -1,31 +1,31 @@
 export interface IXHROptions {
-    type?: string;
-    url: string;
-    user?: string;
-    password?: string;
-    headers?: any;
-    data?: any;
-    responseType?: string;
-    allowRedirect?: boolean;
-    customRequestInitializer?: (request: XMLHttpRequest) => void;
-    cookies?: any;
-    jar?: any;
-    rejectUnauthorized?: any;
-    proxy?: any;
+    type?: string
+    url: string
+    user?: string
+    password?: string
+    headers?: any
+    data?: any
+    responseType?: string
+    allowRedirect?: boolean
+    customRequestInitializer?: (request: XMLHttpRequest) => void
+    cookies?: any
+    jar?: any
+    rejectUnauthorized?: any
+    proxy?: any
 }
 export interface IXHRProgress {
-    type: 'data' | 'header' | 'end' | 'error';
-    data?: string;
-    chunk?: string;
-    progress?: number;
-    done?: boolean;
-    headers?: any;
-    originalHeaders?: any;
-    error?: any;
+    type: 'data' | 'header' | 'end' | 'error'
+    data?: string
+    chunk?: string
+    progress?: number
+    done?: boolean
+    headers?: any
+    originalHeaders?: any
+    error?: any
 }
 export interface IXHRApi {
-    xhr(xhroptions: IXHROptions, progressDelegate?: (progressData: IXHRProgress) => void): Promise<XMLHttpRequest>;
-    xhrStream(xhroptions: IXHROptions, progressDelegate: (progressData: IXHRProgress) => void): Promise<XMLHttpRequest>;
-    disconnect(): void;
-    apiName?: string;
+    xhr(xhroptions: IXHROptions, progressDelegate?: (progressData: IXHRProgress) => void): Promise<XMLHttpRequest>
+    xhrStream(xhroptions: IXHROptions, progressDelegate: (progressData: IXHRProgress) => void): Promise<XMLHttpRequest>
+    disconnect(): void
+    apiName?: string
 }

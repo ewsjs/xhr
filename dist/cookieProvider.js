@@ -5,9 +5,9 @@ const axios_1 = require("axios");
 const http_1 = require("http-cookie-agent/http");
 const tough_cookie_1 = require("tough-cookie");
 class CookieProvider {
-    // private cookies: string[] = [];
+    // private cookies: string[] = []
     get providerName() {
-        return "cookie";
+        return 'cookie';
     }
     constructor(username, password) {
         this._client = null;
@@ -24,8 +24,8 @@ class CookieProvider {
         return this._client;
     }
     async preCall(options) {
-        if (options.headers["Authorization"]) {
-            delete options.headers["Authorization"];
+        if (options.headers['Authorization']) {
+            delete options.headers['Authorization'];
         }
         if (!this.jar) {
             this.jar = new tough_cookie_1.CookieJar();
@@ -33,12 +33,12 @@ class CookieProvider {
                 httpAgent: new http_1.HttpCookieAgent({ cookies: { jar: this.jar } }),
                 httpsAgent: new http_1.HttpsCookieAgent({ cookies: { jar: this.jar }, rejectUnauthorized: options.rejectUnauthorized }),
             });
-            var parser = CookieProvider.parseString(options.url);
-            var baseUrl = parser.scheme + "://" + parser.authority + "/CookieAuth.dll?Logon";
-            var preauthOptions = Object.assign({}, options, {
-                method: "POST",
+            const parser = CookieProvider.parseString(options.url);
+            const baseUrl = `${parser.scheme}://${parser.authority}/CookieAuth.dll?Logon`;
+            const preauthOptions = Object.assign({}, options, {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                data: 'curl=Z2F&flags=0&forcedownlevel=0&formdir=1&trusted=0&username=' + this.username + '&password=' + this.password,
+                data: `curl=Z2F&flags=0&forcedownlevel=0&formdir=1&trusted=0&username=${this.username}&password=${this.password}`,
                 url: baseUrl,
                 maxRedirects: 0,
             });
@@ -61,8 +61,8 @@ class CookieProvider {
     }
     /**@internal */
     static parseString(url) {
-        var regex = RegExp("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?");
-        var parts = url.match(regex);
+        const regex = RegExp('^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?');
+        const parts = url.match(regex);
         return {
             scheme: parts[2],
             authority: parts[4],

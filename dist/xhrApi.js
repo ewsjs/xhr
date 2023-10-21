@@ -15,14 +15,14 @@ const cookieProvider_1 = require("./cookieProvider");
  */
 class XhrApi {
     get apiName() {
-        let n = "request";
-        if (this.proxyConfig.enabled = true) {
-            n += ";proxy:yes";
+        let n = 'request';
+        if (this.proxyConfig.enabled) {
+            n += ';proxy:yes';
         }
         if (this.authProvider) {
-            n += ";auth:" + this.authProvider.providerName;
+            n += `;auth:${this.authProvider.providerName}`;
         }
-        return "request";
+        return n;
     }
     constructor(aucoro = false) {
         this.requestOptions = {};
@@ -53,7 +53,7 @@ class XhrApi {
      */
     useProxy(url, proxyUserName = null, proxyPassword = null) {
         if (this.authProvider instanceof ntlmProvider_1.NtlmProvider) {
-            throw new Error("NtlmProvider does not work with proxy (yet!)");
+            throw new Error('NtlmProvider does not work with proxy (yet!)');
         }
         this.proxyConfig = { enabled: url !== null, url: url, userName: proxyUserName, password: proxyPassword };
         return this;
@@ -68,7 +68,7 @@ class XhrApi {
      */
     useNtlmAuthentication(username, password) {
         if (this.proxyConfig.enabled === true) {
-            throw new Error("NtlmProvider does not work with proxy (yet!)");
+            throw new Error('NtlmProvider does not work with proxy (yet!)');
         }
         this.authProvider = new ntlmProvider_1.NtlmProvider(username, password);
         return this;
@@ -110,7 +110,7 @@ class XhrApi {
         }
         let proxyConfig = this.getProxyOption();
         if (proxyConfig) {
-            options["proxy"] = proxyConfig;
+            options['proxy'] = proxyConfig;
         }
         options = this.getOptions(options);
         let _promise = Promise.resolve(options);
@@ -120,10 +120,10 @@ class XhrApi {
                 client = this.authProvider.client || client;
             }
             const opt = await _promise;
-            // console.log({ opt });
+            // console.log({ opt })
             const response = await client(opt || options);
             // if (error) {
-            //   rejectWithError(reject, error);
+            //   rejectWithError(reject, error)
             // }
             let xhrResponse = {
                 response: response.data ? response.data.toString() : '',
@@ -161,7 +161,7 @@ class XhrApi {
         }
         let proxyConfig = this.getProxyOption();
         if (proxyConfig) {
-            options["proxy"] = proxyConfig;
+            options['proxy'] = proxyConfig;
         }
         options = this.getOptions(options);
         return new Promise((resolve, reject) => {
@@ -175,20 +175,20 @@ class XhrApi {
                 this.stream = response.data;
                 this.stream.on('response', function (response) {
                     // unmodified http.IncomingMessage object
-                    progressDelegate({ type: "header", headers: response["headers"] });
+                    progressDelegate({ type: 'header', headers: response['headers'] });
                 });
-                this.stream.on("data", (chunk) => {
+                this.stream.on('data', (chunk) => {
                     // decompressed data as it is received
-                    // console.log('decoded chunk: ' + chunk)
-                    // console.log(chunk.toString());
-                    progressDelegate({ type: "data", data: chunk.toString() });
+                    // console.log('decoded chunk: ', chunk)
+                    // console.log(chunk.toString())
+                    progressDelegate({ type: 'data', data: chunk.toString() });
                 });
-                this.stream.on("end", () => {
-                    progressDelegate({ type: "end" });
+                this.stream.on('end', () => {
+                    progressDelegate({ type: 'end' });
                     resolve(null);
                 });
                 this.stream.on('error', (error) => {
-                    progressDelegate({ type: "error", error: error });
+                    progressDelegate({ type: 'error', error: error });
                     this.disconnect();
                     rejectWithError(reject, error);
                 });
@@ -209,8 +209,8 @@ class XhrApi {
         if (this.proxyConfig.enabled) {
             let url = this.proxyConfig.url;
             if (this.proxyConfig.userName && this.proxyConfig.password) {
-                let proxyParts = url.split("://");
-                return (proxyParts[0] + "://" + encodeURIComponent(this.proxyConfig.userName) + ":" + encodeURIComponent(this.proxyConfig.password) + "@" + proxyParts[1]);
+                let proxyParts = url.split('://');
+                return (`${proxyParts[0]}://${encodeURIComponent(this.proxyConfig.userName)}:${encodeURIComponent(this.proxyConfig.password)}@${proxyParts[1]}`);
             }
             else {
                 return url;
@@ -265,7 +265,7 @@ function rejectWithError(reject, reason) {
         try {
             let parse = reason.message.match(/statusCode=(\d*?)$/);
             if (parse && parse.length > 1) {
-                xhrResponse["status"] = Number(parse[1]);
+                xhrResponse['status'] = Number(parse[1]);
             }
         }
         catch (e) { }
