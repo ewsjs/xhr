@@ -1,6 +1,6 @@
 {
   "name": "@ewsjs/xhr",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "alternate XHR methods for ewsjs",
   "main": "dist/index.js",
   "repository": {
@@ -16,7 +16,7 @@
   "typings": "dist/index.d.ts",
   "dependencies": {
     "@ewsjs/ntlm-client": "^2.0.0",
-    "axios": "^1.5.0",
+    "axios": "^1.6.0",
     "http-cookie-agent": "^5.0.4",
     "tough-cookie": "^4.1.3"
   },
