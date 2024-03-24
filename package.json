@@ -14,6 +14,9 @@
   "author": "Gautam Singh (@gautamsi)",
   "license": "MIT",
   "typings": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
     "@ewsjs/ntlm-client": "^3.0.1",
     "axios": "^1.6.8",
