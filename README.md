@@ -5,6 +5,12 @@ other related libs will also move to @ewsjs scope/org
 
 > 1.3.0 brings several changes, new api and proxy support. this is also re-written using popular `request` package
 
+## 3.1.0
+* update dependencies
+
+## 3.0.0
+* Updated `@ewsjs/ntlm-client` to `3.0.0` to fix node 18+ issues with ntlm
+
 ## 2.0.0
 * Removed deprecated xhr apis (`cookieAuthXhrApi`, `ntlmAuthXhrApi`, `proxySupportedXhrApi`).
 * removed dependency on `request`, `bluebird` and `fetch`.

@@ -1,22 +1,22 @@
 {
   "name": "@ewsjs/xhr",
-  "version": "2.0.2",
+  "version": "3.1.0",
   "description": "alternate XHR methods for ewsjs",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gautamsi/ews-javascript-api-auth.git"
+    "url": "https://github.com/ewsjs/xhr.git"
   },
   "bugs": {
-    "url": "https://github.com/gautamsi/ews-javascript-api-auth/issues"
+    "url": "https://github.com/ewsjs/xhr/issues"
   },
-  "homepage": "https://github.com/gautamsi/ews-javascript-api-auth",
+  "homepage": "https://github.com/ewsjs/xhr",
   "author": "Gautam Singh (@gautamsi)",
   "license": "MIT",
   "typings": "dist/index.d.ts",
   "dependencies": {
-    "@ewsjs/ntlm-client": "^2.0.0",
-    "axios": "^1.6.0",
+    "@ewsjs/ntlm-client": "^3.0.1",
+    "axios": "^1.6.8",
     "http-cookie-agent": "^5.0.4",
     "tough-cookie": "^4.1.3"
   },
