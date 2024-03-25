@@ -138,6 +138,7 @@ export class XhrApi implements IXHRApi {
       method: <any>xhroptions.type,
       maxRedirects: !xhroptions.allowRedirect ? 0 : 5,
       //resolveWithFullResponse: true
+      responseType: 'text',
     }
 
     if (this.allowUntrustedCertificate) {

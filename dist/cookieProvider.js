@@ -41,6 +41,7 @@ class CookieProvider {
                 data: 'curl=Z2F&flags=0&forcedownlevel=0&formdir=1&trusted=0&username=' + this.username + '&password=' + this.password,
                 url: baseUrl,
                 maxRedirects: 0,
+                responseType: 'text',
             });
             try {
                 await this.client(preauthOptions);
@@ -55,6 +56,7 @@ class CookieProvider {
                 this._client = axios_1.default.create({
                     httpAgent: new http_1.HttpCookieAgent({ cookies: { jar: this.jar } }),
                     httpsAgent: new http_1.HttpsCookieAgent({ cookies: { jar: this.jar }, rejectUnauthorized: options.rejectUnauthorized }),
+                    responseType: 'text',
                 });
             return options;
         }

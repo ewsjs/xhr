@@ -104,6 +104,7 @@ class XhrApi {
             method: xhroptions.type,
             maxRedirects: !xhroptions.allowRedirect ? 0 : 5,
             //resolveWithFullResponse: true
+            responseType: 'text',
         };
         if (this.allowUntrustedCertificate) {
             options.httpsAgent = new https.Agent({ rejectUnauthorized: false });

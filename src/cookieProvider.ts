@@ -47,6 +47,7 @@ export class CookieProvider implements IProvider {
         data: 'curl=Z2F&flags=0&forcedownlevel=0&formdir=1&trusted=0&username=' + this.username + '&password=' + this.password,
         url: baseUrl,
         maxRedirects: 0,
+        responseType: 'text',
       });
 
       try {
@@ -59,6 +60,7 @@ export class CookieProvider implements IProvider {
       if (!this._client) this._client = axios.create({
         httpAgent: new HttpCookieAgent({ cookies: { jar: this.jar } }),
         httpsAgent: new HttpsCookieAgent({ cookies: { jar: this.jar }, rejectUnauthorized: options.rejectUnauthorized }),
+        responseType: 'text',
       });
       return options;
     }
