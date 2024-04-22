@@ -281,7 +281,7 @@ export class XhrApi implements IXHRApi {
       if (this.proxyConfig.userName && this.proxyConfig.password) {
         return {
           protocol: proxyParts.protocol,
-          host: proxyParts.host,
+          host: proxyParts.hostname,
           port: proxyParts.port ? Number(proxyParts.port) : 80,
           auth: {
             username: this.proxyConfig.userName,
@@ -292,7 +292,7 @@ export class XhrApi implements IXHRApi {
       else {
         return {
           protocol: proxyParts.protocol,
-          host: proxyParts.host,
+          host: proxyParts.hostname,
           port: proxyParts.port ? Number(proxyParts.port) : 80,
         }
       }

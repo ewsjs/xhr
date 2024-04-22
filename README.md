@@ -5,6 +5,12 @@ other related libs will also move to @ewsjs scope/org
 
 > 1.3.0 brings several changes, new api and proxy support. this is also re-written using popular `request` package
 
+## 3.1.2
+* Fixed proxy issue with axios
+
+## 3.1.1
+* Fixed responseType for axios
+
 ## 3.1.0
 * update dependencies
 
