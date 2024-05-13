@@ -139,6 +139,7 @@ export class XhrApi implements IXHRApi {
       maxRedirects: !xhroptions.allowRedirect ? 0 : 5,
       //resolveWithFullResponse: true
       responseType: 'text',
+      validateStatus: () => true, // need this to be processed by ews not axios.
     }
 
     if (this.allowUntrustedCertificate) {
@@ -179,7 +180,7 @@ export class XhrApi implements IXHRApi {
         return setupXhrResponse(xhrResponse);
       }
       else {
-        throw setupXhrResponse(xhrResponse);
+        throw xhrResponse;
       }
     } catch (error) {
 

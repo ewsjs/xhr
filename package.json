@@ -1,6 +1,6 @@
 {
   "name": "@ewsjs/xhr",
-  "version": "3.1.2",
+  "version": "3.1.3",
   "description": "alternate XHR methods for ewsjs",
   "main": "dist/index.js",
   "repository": {

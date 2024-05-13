@@ -105,6 +105,7 @@ class XhrApi {
             maxRedirects: !xhroptions.allowRedirect ? 0 : 5,
             //resolveWithFullResponse: true
             responseType: 'text',
+            validateStatus: () => true, // need this to be processed by ews not axios.
         };
         if (this.allowUntrustedCertificate) {
             options.httpsAgent = new https.Agent({ rejectUnauthorized: false });
@@ -139,7 +140,7 @@ class XhrApi {
                 return (0, utils_1.setupXhrResponse)(xhrResponse);
             }
             else {
-                throw (0, utils_1.setupXhrResponse)(xhrResponse);
+                throw xhrResponse;
             }
         }
         catch (error) {
